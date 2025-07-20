@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useId, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useId, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button.tsx";
@@ -27,22 +27,27 @@ const formSchema = z.object({
   stateBrush: z.number(),
 });
 
-type Form = z.infer<typeof formSchema>;
-
 export function App() {
   const form = useForm({
     defaultValues: { frameDuration: 1000, stateBrush: 1 },
     resolver: zodResolver(formSchema),
   });
-  const selectedStateBrush = form.watch("stateBrush");
-  const frameDuration = form.watch("frameDuration");
+  const frameDuration = useWatch({
+    control: form.control,
+    name: "frameDuration",
+  });
+  const stateBrush = useWatch({
+    control: form.control,
+    name: "stateBrush",
+  });
   const stateBrushSelectId = useId();
   const frameDurationInputId = useId();
 
   const [boardState, setBoardState] = useState(
     Array.from({ length: 32 }, () => Array.from({ length: 32 }, () => 0)),
   );
-  const advanceBoardState = useCallback(() => {
+
+  function advanceBoardState() {
     setBoardState((prev) => {
       const curr = prev.map((row) => [...row]);
       for (const [i, row] of prev.entries()) {
@@ -72,7 +77,7 @@ export function App() {
       }
       return curr;
     });
-  }, []);
+  }
 
   const [isRunning, setIsRunning] = useState(false);
   useEffect(() => {
@@ -89,7 +94,7 @@ export function App() {
   }, [isRunning, advanceBoardState, frameDuration]);
 
   return (
-    <main className="grid grid-cols-[auto_1fr] p-10 gap-8">
+    <main className="grid grid-cols-[auto_1fr] p-8 gap-6">
       <header className="col-span-2">
         <h1>Celular Automata</h1>
       </header>
@@ -103,8 +108,7 @@ export function App() {
               onClick={() => {
                 setBoardState((prev) => {
                   const curr = prev.map((row) => [...row]);
-                  curr[i][j] =
-                    curr[i][j] === selectedStateBrush ? 0 : selectedStateBrush;
+                  curr[i][j] = curr[i][j] === stateBrush ? 0 : stateBrush;
                   return curr;
                 });
               }}
@@ -112,80 +116,77 @@ export function App() {
           )),
         )}
       </section>
-      <section className="max-w-sm flex flex-col gap-6">
+      <section className="max-w-sm flex flex-col gap-4">
         <Form {...form}>
-          <form className="flex flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="stateBrush"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor={stateBrushSelectId}>
-                    State Brush
-                  </FormLabel>
-                  <FormControl>
-                    <Select
-                      name={field.name}
-                      onValueChange={(v) => {
-                        field.onChange(Number.parseInt(v));
-                      }}
-                      value={field.value.toString()}
+          <FormField
+            control={form.control}
+            name="stateBrush"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel htmlFor={stateBrushSelectId}>State Brush</FormLabel>
+                <FormControl>
+                  <Select
+                    name={field.name}
+                    onValueChange={(v) => {
+                      field.onChange(Number.parseInt(v));
+                    }}
+                    value={field.value.toString()}
+                  >
+                    <SelectTrigger
+                      disabled={field.disabled}
+                      id={stateBrushSelectId}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
                     >
-                      <SelectTrigger
-                        className="w-[180px]"
-                        disabled={field.disabled}
-                        id={stateBrushSelectId}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                      >
-                        <SelectValue placeholder="State" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0">Dead</SelectItem>
-                        <SelectItem value="1">Alive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormDescription>
-                    The state to paint the initial configuration of the board
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="frameDuration"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor={frameDurationInputId}>
-                    Frame Duration
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} id={frameDurationInputId} />
-                  </FormControl>
-                  <FormDescription>
-                    Duration of each frame in ms
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
+                      <SelectValue placeholder="State" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Dead</SelectItem>
+                      <SelectItem value="1">Alive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormDescription>
+                  The state to paint the initial configuration of the board
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="frameDuration"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel htmlFor={frameDurationInputId}>
+                  Frame Duration
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    id={frameDurationInputId}
+                    onChange={(e) => {
+                      field.onChange(Number.parseInt(e.target.value));
+                    }}
+                  />
+                </FormControl>
+                <FormDescription>Duration of each frame in ms</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </Form>
-        <div className="flex flex-col gap-4">
-          <Button
-            onClick={() => {
-              setIsRunning((prev) => !prev);
-            }}
-            type="button"
-          >
-            {isRunning ? "Stop Automaton" : "Start Automaton"}
-          </Button>
-          <Button onClick={advanceBoardState} type="button">
-            Advance Automaton
-          </Button>
-        </div>
+        <Button
+          onClick={() => {
+            setIsRunning((prev) => !prev);
+          }}
+          type="button"
+        >
+          {isRunning ? "Stop Automaton" : "Start Automaton"}
+        </Button>
+        <Button onClick={advanceBoardState} type="button">
+          Advance Automaton
+        </Button>
       </section>
     </main>
   );

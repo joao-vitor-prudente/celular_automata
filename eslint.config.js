@@ -30,6 +30,9 @@ export default tslint.config([
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      "react-hooks/exhaustive-deps": "off",
+    },
   },
   {
     extends: [

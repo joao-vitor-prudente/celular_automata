@@ -1,11 +1,16 @@
 import { useEffect } from "react";
+import { z } from "zod";
 
-import type { useBoard } from "@/app/use-board.ts";
-import type { useSimulationForm } from "@/app/use-simulation-form.ts";
+import type { Automaton } from "@/app/automata.ts";
+import type { UseBoard } from "@/app/use-board.ts";
+import type { UseSimulationForm } from "@/app/use-simulation-form.ts";
 
-export function Board(props: {
-  board: ReturnType<typeof useBoard>;
-  formValues: ReturnType<typeof useSimulationForm>["values"];
+import { matrixIter, objectKeys } from "@/lib/utils.ts";
+
+export function Board<TState extends string>(props: {
+  automaton: Automaton<TState>;
+  board: UseBoard<TState>;
+  formValues: UseSimulationForm["values"];
   isRunning: boolean;
 }) {
   useEffect(() => {
@@ -19,21 +24,29 @@ export function Board(props: {
     return () => {
       clearInterval(interval);
     };
-  }, [props.isRunning, props.board.advance, props.formValues.frameDuration]);
+  }, [props.isRunning, props.formValues.frameDuration]);
+
+  function validateState(state: string): TState {
+    return z.enum(objectKeys(props.automaton.states)).parse(state);
+  }
 
   return (
     <section className="grid grid-cols-32 gap-1">
-      {props.board.flatMap((cell, i, j, key) => (
-        <button
-          className="size-6 data-[status=0]:bg-card data-[status=1]:bg-card-foreground"
-          data-status={cell}
-          disabled={props.isRunning}
-          key={key}
-          onClick={() => {
-            props.board.set(i, j, props.formValues.stateBrush);
-          }}
-        />
-      ))}
+      {matrixIter(props.board.state)
+        .map(([cell, i, j]) => (
+          <button
+            className="size-6"
+            disabled={props.isRunning}
+            key={`(${i.toString()}, ${j.toString()})`}
+            onClick={() => {
+              props.board.set(i, j, validateState(props.formValues.stateBrush));
+            }}
+            style={{
+              background: props.automaton.states[cell].color,
+            }}
+          />
+        ))
+        .toArray()}
     </section>
   );
 }

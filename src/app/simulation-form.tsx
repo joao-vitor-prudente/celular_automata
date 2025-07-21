@@ -1,4 +1,5 @@
-import type { useSimulationForm } from "@/app/use-simulation-form.ts";
+import type { Automaton } from "@/app/automata.ts";
+import type { UseSimulationForm } from "@/app/use-simulation-form.ts";
 
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -18,9 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
+import { objectKeys, stringCapitalize } from "@/lib/utils.ts";
 
 export function SimulationForm(
-  props: ReturnType<typeof useSimulationForm> & {
+  props: UseSimulationForm & {
+    automaton: Automaton<string>;
     isRunning: boolean;
     onAdvanceAutomaton: () => void;
     onToggleAutomaton: () => void;
@@ -38,10 +41,8 @@ export function SimulationForm(
               <FormControl>
                 <Select
                   name={field.name}
-                  onValueChange={(v) => {
-                    field.onChange(Number.parseInt(v));
-                  }}
-                  value={field.value.toString()}
+                  onValueChange={field.onChange}
+                  value={field.value}
                 >
                   <SelectTrigger
                     disabled={field.disabled}
@@ -52,8 +53,11 @@ export function SimulationForm(
                     <SelectValue placeholder="State" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0">Dead</SelectItem>
-                    <SelectItem value="1">Alive</SelectItem>
+                    {objectKeys(props.automaton.states).map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {stringCapitalize(state)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormControl>

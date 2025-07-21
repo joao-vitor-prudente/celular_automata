@@ -6,7 +6,7 @@ import { z } from "zod";
 import type { Automaton } from "@/app/automata.ts";
 
 const formSchema = z.object({
-  frameDuration: z.number(),
+  fps: z.number(),
   stateBrush: z.string(),
 });
 
@@ -22,28 +22,28 @@ export function useSimulationForm(
   automaton: Automaton<string>,
 ): UseSimulationForm {
   const form = useForm({
-    defaultValues: { frameDuration: 1000, stateBrush: automaton.baseState },
+    defaultValues: { fps: 5, stateBrush: automaton.baseState },
     resolver: zodResolver(formSchema),
   });
-  const frameDuration = useWatch({
+  const fps = useWatch({
     control: form.control,
-    name: "frameDuration",
+    name: "fps",
   });
   const stateBrush = useWatch({
     control: form.control,
     name: "stateBrush",
   });
   const stateBrushSelectId = useId();
-  const frameDurationInputId = useId();
+  const fpsInputId = useId();
 
   return {
     form,
     ids: {
-      frameDuration: frameDurationInputId,
+      fps: fpsInputId,
       stateBrush: stateBrushSelectId,
     },
     values: {
-      frameDuration,
+      fps,
       stateBrush,
     },
   };

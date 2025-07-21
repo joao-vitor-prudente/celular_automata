@@ -19,12 +19,12 @@ export function Board<TState extends string>(props: {
     props.board.advance();
     const interval = setInterval(() => {
       props.board.advance();
-    }, props.formValues.frameDuration);
+    }, 1000 / props.formValues.fps);
 
     return () => {
       clearInterval(interval);
     };
-  }, [props.isRunning, props.formValues.frameDuration]);
+  }, [props.isRunning, props.formValues.fps]);
 
   function validateState(state: string): TState {
     return z.enum(objectKeys(props.automaton.states)).parse(state);

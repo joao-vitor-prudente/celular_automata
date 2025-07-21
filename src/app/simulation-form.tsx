@@ -45,6 +45,7 @@ export function SimulationForm(
                   value={field.value}
                 >
                   <SelectTrigger
+                    className="w-full"
                     disabled={field.disabled}
                     id={props.ids.stateBrush}
                     onBlur={field.onBlur}
@@ -70,22 +71,23 @@ export function SimulationForm(
         />
         <FormField
           control={props.form.control}
-          name="frameDuration"
+          name="fps"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor={props.ids.frameDuration}>
-                Frame Duration
-              </FormLabel>
+              <FormLabel htmlFor={props.ids.fps}>FPS</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  id={props.ids.frameDuration}
+                  id={props.ids.fps}
                   onChange={(e) => {
                     field.onChange(Number.parseInt(e.target.value));
                   }}
+                  type="number"
                 />
               </FormControl>
-              <FormDescription>Duration of each frame in ms</FormDescription>
+              <FormDescription>
+                Number of steps computed each second
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

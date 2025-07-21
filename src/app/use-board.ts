@@ -4,6 +4,7 @@ import type { Automaton } from "@/app/automata.ts";
 
 import {
   arrayCount,
+  type ImmutableMatrix,
   intWrap,
   matrixCopy,
   matrixFill,
@@ -16,7 +17,7 @@ export interface UseBoard<TState extends string> {
 
   set(i: number, j: number, value: TState): void;
 
-  state: TState[][];
+  readonly state: ImmutableMatrix<TState>;
 }
 
 export function useBoard<TState extends string>(
@@ -26,7 +27,7 @@ export function useBoard<TState extends string>(
   const [state, setState] = useState(matrixFill(automaton.baseState, size));
 
   function getSurroundingStateCounts(
-    boardState: TState[][],
+    boardState: ImmutableMatrix<TState>,
     i: number,
     j: number,
   ): Partial<Record<TState, number>> {

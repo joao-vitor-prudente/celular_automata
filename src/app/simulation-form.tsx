@@ -21,14 +21,14 @@ import {
 } from "@/components/ui/select.tsx";
 import { objectKeys, stringCapitalize } from "@/lib/utils.ts";
 
-export function SimulationForm(
-  props: UseSimulationForm & {
-    automaton: Automaton<string>;
-    isRunning: boolean;
-    onAdvanceAutomaton: () => void;
-    onToggleAutomaton: () => void;
-  },
-) {
+interface SimulationProps extends UseSimulationForm {
+  readonly automaton: Automaton<string>;
+  readonly isRunning: boolean;
+  readonly onAdvanceAutomaton: () => void;
+  readonly onToggleAutomaton: () => void;
+}
+
+export function SimulationForm(props: SimulationProps) {
   return (
     <section className="max-w-sm flex flex-col gap-4">
       <Form {...props.form}>

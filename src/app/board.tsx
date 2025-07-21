@@ -7,12 +7,14 @@ import type { UseSimulationForm } from "@/app/use-simulation-form.ts";
 
 import { matrixIter, objectKeys } from "@/lib/utils.ts";
 
-export function Board<TState extends string>(props: {
-  automaton: Automaton<TState>;
-  board: UseBoard<TState>;
-  formValues: UseSimulationForm["values"];
-  isRunning: boolean;
-}) {
+interface BoardProps<TState extends string> {
+  readonly automaton: Automaton<TState>;
+  readonly board: UseBoard<TState>;
+  readonly formValues: UseSimulationForm["values"];
+  readonly isRunning: boolean;
+}
+
+export function Board<TState extends string>(props: BoardProps<TState>) {
   useEffect(() => {
     if (!props.isRunning) return;
 

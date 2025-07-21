@@ -11,9 +11,9 @@ const formSchema = z.object({
 });
 
 export interface UseSimulationForm {
-  form: UseFormReturn<FormData>;
-  ids: Record<keyof FormData, string>;
-  values: FormData;
+  readonly form: UseFormReturn<FormData>;
+  readonly ids: Record<keyof FormData, string>;
+  readonly values: FormData;
 }
 
 type FormData = z.infer<typeof formSchema>;

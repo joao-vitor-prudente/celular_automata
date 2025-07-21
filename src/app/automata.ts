@@ -1,13 +1,13 @@
 export interface Automaton<TState extends string> {
-  baseState: TState;
-  name: string;
-  states: Record<
+  readonly baseState: TState;
+  readonly name: string;
+  readonly states: Record<
     TState,
     {
-      color: string;
-      transitions: {
-        if: Record<TState, number>;
-        then: TState;
+      readonly color: string;
+      readonly transitions: {
+        readonly if: Record<TState, number>;
+        readonly then: TState;
       }[];
     }
   >;

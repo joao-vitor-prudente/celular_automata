@@ -4,6 +4,7 @@ import type { Automaton } from "@/app/automata.ts";
 
 import {
   arrayCount,
+  intWrap,
   matrixCopy,
   matrixFill,
   matrixIter,
@@ -29,19 +30,15 @@ export function useBoard<TState extends string>(
     i: number,
     j: number,
   ): Partial<Record<TState, number>> {
-    const leftIndex = j - 1 < 0 ? size - 1 : j - 1;
-    const rightIndex = j + 1 > size - 1 ? 0 : j + 1;
-    const topIndex = i - 1 < 0 ? size - 1 : i - 1;
-    const bottomIndex = i + 1 > size - 1 ? 0 : i + 1;
     return arrayCount([
-      boardState[topIndex][leftIndex],
-      boardState[topIndex][j],
-      boardState[topIndex][rightIndex],
-      boardState[i][leftIndex],
-      boardState[i][rightIndex],
-      boardState[bottomIndex][leftIndex],
-      boardState[bottomIndex][j],
-      boardState[bottomIndex][rightIndex],
+      boardState[intWrap(i - 1, 0, size - 1)][intWrap(j - 1, 0, size - 1)],
+      boardState[intWrap(i - 1, 0, size - 1)][j],
+      boardState[intWrap(i - 1, 0, size - 1)][intWrap(j + 1, 0, size - 1)],
+      boardState[i][intWrap(j - 1, 0, size - 1)],
+      boardState[i][intWrap(j + 1, 0, size - 1)],
+      boardState[intWrap(i + 1, 0, size - 1)][intWrap(j - 1, 0, size - 1)],
+      boardState[intWrap(i + 1, 0, size - 1)][j],
+      boardState[intWrap(i + 1, 0, size - 1)][intWrap(j + 1, 0, size - 1)],
     ]);
   }
 

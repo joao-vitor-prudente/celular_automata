@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-import { builtins } from "@/app/automata.ts";
-import { Board } from "@/app/board.tsx";
-import { SimulationForm } from "@/app/simulation-form.tsx";
-import { useBoard } from "@/app/use-board.ts";
-import { useSimulationForm } from "@/app/use-simulation-form.ts";
+import { Board } from "@/components/board";
+import { useBoard } from "@/components/board/use-board.ts";
+import { SimulationForm } from "@/components/simulation-form";
+import { useSimulationForm } from "@/components/simulation-form/use-simulation-form.ts";
+import { builtins } from "@/lib/automata.ts";
 
 export function App() {
   const automaton = builtins.conwaysGameOfLife;

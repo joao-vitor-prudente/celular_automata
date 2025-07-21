@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { Automaton } from "@/app/automata.ts";
+import type { Automaton } from "@/lib/automata.ts";
 
 import {
   arrayCount,
@@ -10,7 +10,7 @@ import {
   matrixFill,
   matrixIter,
   objectEntries,
-} from "@/lib/utils.ts";
+} from "@/lib/extensions";
 
 export interface UseBoard<TState extends string> {
   advance(): void;

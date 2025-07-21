@@ -3,7 +3,7 @@ import { useId } from "react";
 import { useForm, type UseFormReturn, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import type { Automaton } from "@/app/automata.ts";
+import type { Automaton } from "@/lib/automata.ts";
 
 const formSchema = z.object({
   fps: z.number(),

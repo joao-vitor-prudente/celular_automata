@@ -1,5 +1,5 @@
-import type { Automaton } from "@/app/automata.ts";
-import type { UseSimulationForm } from "@/app/use-simulation-form.ts";
+import type { UseSimulationForm } from "@/components/simulation-form/use-simulation-form.ts";
+import type { Automaton } from "@/lib/automata.ts";
 
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { objectKeys, stringCapitalize } from "@/lib/utils.ts";
+import { objectKeys, stringCapitalize } from "@/lib/extensions";
 
 interface SimulationProps extends UseSimulationForm {
   readonly automaton: Automaton<string>;

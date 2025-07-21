@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { AutomatonForm } from "@/components/automaton-form";
 import { Board } from "@/components/board";
 import { useBoard } from "@/components/board/use-board.ts";
 import { SimulationForm } from "@/components/simulation-form";
@@ -13,16 +14,18 @@ export function App() {
   const [isRunning, setIsRunning] = useState(false);
 
   return (
-    <main className="grid grid-cols-[auto_1fr] p-8 gap-6">
+    <main className="grid grid-cols-[auto_1fr] grid-rows-[auto_auto_1fr] p-8 gap-6">
       <header className="col-span-2">
-        <h1>Celular Automata</h1>
+        <h1 className="text-xl">Celular Automata</h1>
       </header>
-      <Board
-        automaton={automaton}
-        board={board}
-        formValues={form.values}
-        isRunning={isRunning}
-      />
+      <div className="row-span-2">
+        <Board
+          automaton={automaton}
+          board={board}
+          formValues={form.values}
+          isRunning={isRunning}
+        />
+      </div>
       <SimulationForm
         {...form}
         automaton={automaton}
@@ -33,6 +36,7 @@ export function App() {
           setIsRunning((prev) => !prev);
         }}
       />
+      <AutomatonForm />
     </main>
   );
 }

@@ -32,6 +32,9 @@ interface SimulationProps extends UseSimulationForm {
 export function SimulationForm(props: SimulationProps) {
   return (
     <section className="max-w-sm flex flex-col gap-4">
+      <header>
+        <h4 className="text-lg">Simulation Configuration</h4>
+      </header>
       <Form {...props.form}>
         <FormField
           control={props.form.control}

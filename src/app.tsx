@@ -27,9 +27,8 @@ export function App() {
         {...form}
         automaton={automaton}
         isRunning={isRunning}
-        onAdvanceAutomaton={() => {
-          board.advance();
-        }}
+        onAdvanceAutomaton={board.advance}
+        onClear={board.clear}
         onToggleAutomaton={() => {
           setIsRunning((prev) => !prev);
         }}

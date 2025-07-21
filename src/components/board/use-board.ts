@@ -13,10 +13,9 @@ import {
 } from "@/lib/extensions";
 
 export interface UseBoard<TState extends string> {
-  advance(): void;
-
-  set(i: number, j: number, value: TState): void;
-
+  readonly advance: () => void;
+  readonly clear: () => void;
+  readonly set: (i: number, j: number, value: TState) => void;
   readonly state: ImmutableMatrix<TState>;
 }
 
@@ -64,6 +63,10 @@ export function useBoard<TState extends string>(
     });
   }
 
+  function clear(): void {
+    setState(matrixFill(automaton.baseState, size));
+  }
+
   function set(i: number, j: number, value: TState): void {
     setState((prev) => {
       const curr = matrixCopy(prev);
@@ -72,5 +75,5 @@ export function useBoard<TState extends string>(
     });
   }
 
-  return { advance, set, state };
+  return { advance, clear, set, state };
 }

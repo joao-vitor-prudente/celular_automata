@@ -25,6 +25,7 @@ interface SimulationProps extends UseSimulationForm {
   readonly automaton: Automaton<string>;
   readonly isRunning: boolean;
   readonly onAdvanceAutomaton: () => void;
+  readonly onClear: () => void;
   readonly onToggleAutomaton: () => void;
 }
 
@@ -93,15 +94,14 @@ export function SimulationForm(props: SimulationProps) {
           )}
         />
       </Form>
-      <Button onClick={props.onToggleAutomaton} type="button">
+      <Button onClick={props.onToggleAutomaton}>
         {props.isRunning ? "Stop Automaton" : "Start Automaton"}
       </Button>
-      <Button
-        disabled={props.isRunning}
-        onClick={props.onAdvanceAutomaton}
-        type="button"
-      >
+      <Button disabled={props.isRunning} onClick={props.onAdvanceAutomaton}>
         Advance Automaton
+      </Button>
+      <Button disabled={props.isRunning} onClick={props.onClear}>
+        Clear Board
       </Button>
     </section>
   );

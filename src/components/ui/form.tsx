@@ -47,17 +47,17 @@ const useFormField = () => {
   }
 
   const itemContext = React.useContext(FormItemContext);
+  if (!itemContext)
+    throw new Error("useFormField should be used within <FormItem>");
   const { getFieldState } = useFormContext();
   const formState = useFormState({ name: fieldContext.name });
   const fieldState = getFieldState(fieldContext.name, formState);
 
-  const { id } = itemContext;
-
   return {
-    formDescriptionId: `${id}-form-item-description`,
-    formItemId: `${id}-form-item`,
-    formMessageId: `${id}-form-item-message`,
-    id,
+    formDescriptionId: `${itemContext.id}-form-item-description`,
+    formItemId: `${itemContext.id}-form-item`,
+    formMessageId: `${itemContext.id}-form-item-message`,
+    id: itemContext.id,
     name: fieldContext.name,
     ...fieldState,
   };
@@ -67,9 +67,7 @@ interface FormItemContextValue {
   id: string;
 }
 
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue,
-);
+const FormItemContext = React.createContext<FormItemContextValue | null>(null);
 
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   const { error, formDescriptionId, formItemId, formMessageId } =

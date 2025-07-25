@@ -32,19 +32,14 @@ function RouteComponent() {
   const [isRunning, setIsRunning] = useBooleanState(false);
 
   return (
-    <main className="grid grid-cols-[auto_1fr] grid-rows-[auto_auto_1fr] p-8 gap-6">
-      <header className="col-span-2">
-        <h1 className="text-xl">Celular Automata</h1>
-      </header>
-      <div className="row-span-2">
-        <Board
-          automaton={automaton}
-          board={board}
-          fps={formValues.fps}
-          isRunning={isRunning}
-          stateBrush={formValues.stateBrush}
-        />
-      </div>
+    <div className="flex gap-6">
+      <Board
+        automaton={automaton}
+        board={board}
+        fps={formValues.fps}
+        isRunning={isRunning}
+        stateBrush={formValues.stateBrush}
+      />
       <section className="max-w-sm flex flex-col gap-4">
         <header>
           <h4 className="text-lg">Simulation Configuration</h4>
@@ -53,10 +48,10 @@ function RouteComponent() {
           <form.AppField name="stateBrush">
             {(field) => (
               <field.FormItem>
-                <field.FormLabel>Username</field.FormLabel>
+                <field.FormLabel>State Brush</field.FormLabel>
                 <field.FormControl>
                   <field.Select>
-                    <field.SelectTrigger>
+                    <field.SelectTrigger className="w-full">
                       <SelectValue placeholder="State" />
                     </field.SelectTrigger>
                     <SelectContent>
@@ -78,7 +73,7 @@ function RouteComponent() {
           <form.AppField name="fps">
             {(field) => (
               <field.FormItem>
-                <field.FormLabel>Username</field.FormLabel>
+                <field.FormLabel>FPS</field.FormLabel>
                 <field.FormControl>
                   <field.Input type="number" />
                 </field.FormControl>
@@ -93,13 +88,25 @@ function RouteComponent() {
         <Button onClick={setIsRunning.toggle}>
           {isRunning ? "Stop Automaton" : "Start Automaton"}
         </Button>
-        <Button disabled={isRunning} onClick={board.advance}>
-          Advance Automaton
-        </Button>
-        <Button disabled={isRunning} onClick={board.clear}>
-          Clear Board
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            className="grow"
+            disabled={isRunning}
+            onClick={board.advance}
+            variant="secondary"
+          >
+            Advance Automaton
+          </Button>
+          <Button
+            className="grow"
+            disabled={isRunning}
+            onClick={board.clear}
+            variant="destructive"
+          >
+            Clear Board
+          </Button>
+        </div>
       </section>
-    </main>
+    </div>
   );
 }

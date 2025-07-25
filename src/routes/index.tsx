@@ -11,7 +11,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { useBooleanState } from "@/hooks/useBooleanState.ts";
+import { useBooleanState } from "@/hooks/use-boolean-state.ts";
 import { builtins } from "@/lib/automata.ts";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
 

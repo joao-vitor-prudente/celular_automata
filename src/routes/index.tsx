@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { AutomatonForm } from "@/components/automaton-form";
@@ -7,7 +8,11 @@ import { SimulationForm } from "@/components/simulation-form";
 import { useSimulationForm } from "@/components/simulation-form/use-simulation-form.ts";
 import { builtins } from "@/lib/automata.ts";
 
-export function App() {
+export const Route = createFileRoute("/")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
   const automaton = builtins.conwaysGameOfLife;
   const form = useSimulationForm(automaton);
   const board = useBoard(32, automaton);

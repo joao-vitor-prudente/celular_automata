@@ -33,11 +33,11 @@ export function Board<TState extends string>(props: BoardProps<TState>) {
   }
 
   return (
-    <section className="grid grid-cols-32 gap-1">
+    <section className="grid grid-cols-32">
       {matrixIter(props.board.state)
         .map(([cell, i, j]) => (
           <button
-            className="size-6"
+            className="size-6 border border-background"
             disabled={props.isRunning}
             key={`(${i.toString()}, ${j.toString()})`}
             onClick={() => {

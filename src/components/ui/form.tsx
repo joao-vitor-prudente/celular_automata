@@ -1,99 +1,73 @@
-import * as LabelPrimitive from "@radix-ui/react-label";
+/* eslint-disable react-refresh/only-export-components */
 import { Slot } from "@radix-ui/react-slot";
-import * as React from "react";
 import {
-  Controller,
-  type ControllerProps,
-  type FieldPath,
-  type FieldValues,
-  FormProvider,
-  useFormContext,
-  useFormState,
-} from "react-hook-form";
+  createFormHook,
+  createFormHookContexts,
+  useStore,
+} from "@tanstack/react-form";
+import * as React from "react";
 
+import { Input as _Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label";
+import {
+  Select as _Select,
+  SelectTrigger as _SelectTrigger,
+} from "@/components/ui/select.tsx";
 import { cn } from "@/lib/utils";
 
-const Form = FormProvider;
+const { fieldContext, formContext, useFieldContext, useFormContext } =
+  createFormHookContexts();
 
-interface FormFieldContextValue<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> {
-  name: TName;
-}
-
-const FormFieldContext = React.createContext<FormFieldContextValue | null>(
-  null,
-);
-
-const FormField = <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  ...props
-}: ControllerProps<TFieldValues, TName>) => {
-  return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
-      <Controller {...props} />
-    </FormFieldContext.Provider>
-  );
-};
-
-const useFormField = () => {
-  const fieldContext = React.useContext(FormFieldContext);
-  if (!fieldContext) {
-    throw new Error("useFormField should be used within <FormField>");
-  }
-
-  const itemContext = React.useContext(FormItemContext);
-  if (!itemContext)
-    throw new Error("useFormField should be used within <FormItem>");
-  const { getFieldState } = useFormContext();
-  const formState = useFormState({ name: fieldContext.name });
-  const fieldState = getFieldState(fieldContext.name, formState);
-
-  return {
-    formDescriptionId: `${itemContext.id}-form-item-description`,
-    formItemId: `${itemContext.id}-form-item`,
-    formMessageId: `${itemContext.id}-form-item-message`,
-    id: itemContext.id,
-    name: fieldContext.name,
-    ...fieldState,
-  };
-};
+const { useAppForm, withForm } = createFormHook({
+  fieldComponents: {
+    FormControl,
+    FormDescription,
+    FormItem,
+    FormLabel,
+    FormMessage,
+    Input,
+    Select,
+    SelectTrigger,
+  },
+  fieldContext,
+  formComponents: {},
+  formContext,
+});
 
 interface FormItemContextValue {
   id: string;
 }
 
-const FormItemContext = React.createContext<FormItemContextValue | null>(null);
+const FormItemContext = React.createContext<FormItemContextValue>(
+  {} as FormItemContextValue,
+);
 
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
-  const { error, formDescriptionId, formItemId, formMessageId } =
-    useFormField();
+  const field = useFormContexts();
 
   return (
     <Slot
       aria-describedby={
-        !error ? formDescriptionId : `${formDescriptionId} ${formMessageId}`
+        !field.errors.length
+          ? field.descriptionId
+          : `${field.descriptionId} ${field.messageId}`
       }
-      aria-invalid={!!error}
+      aria-invalid={!!field.errors.length}
       data-slot="form-control"
-      id={formItemId}
+      id={field.formItemId}
       {...props}
     />
   );
 }
 
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
-  const { formDescriptionId } = useFormField();
+  const field = useFormContexts();
 
   return (
     <p
       className={cn("text-muted-foreground text-sm", className)}
       data-slot="form-description"
-      id={formDescriptionId}
+      id={field.descriptionId}
       {...props}
     />
   );
@@ -116,33 +90,32 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 function FormLabel({
   className,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  const { error, formItemId } = useFormField();
-
+}: React.ComponentProps<typeof Label>) {
+  const field = useFormContexts();
   return (
     <Label
       className={cn("data-[error=true]:text-destructive", className)}
-      data-error={!!error}
+      data-error={!!field.errors.length}
       data-slot="form-label"
-      htmlFor={formItemId}
+      htmlFor={field.formItemId}
       {...props}
     />
   );
 }
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
-  const { error, formMessageId } = useFormField();
-  const body = error ? String(error.message ?? "") : props.children;
-
-  if (!body) {
-    return null;
-  }
+  const field = useFormContexts();
+  const body = field.errors.length
+    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      String(field.errors.at(0)?.message ?? "")
+    : props.children;
+  if (!body) return null;
 
   return (
     <p
       className={cn("text-destructive text-sm", className)}
       data-slot="form-message"
-      id={formMessageId}
+      id={field.messageId}
       {...props}
     >
       {body}
@@ -150,12 +123,61 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-export {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-};
+function Input(
+  props: Omit<
+    React.ComponentProps<typeof _Input>,
+    "id" | "name" | "onBlur" | "onValueChange" | "value"
+  >,
+) {
+  const { field, formItemId } = useFormContexts();
+
+  return (
+    <_Input
+      id={formItemId}
+      name={field.name}
+      onBlur={field.handleBlur}
+      onChange={(e) => {
+        if (props.type === "number") field.handleChange(e.target.valueAsNumber);
+        else field.handleChange(e.target.value);
+      }}
+      value={field.state.value as string}
+      {...props}
+    />
+  );
+}
+
+function Select(props: React.ComponentProps<typeof _Select>) {
+  const { field } = useFormContexts();
+  return (
+    <_Select
+      {...props}
+      name={field.name}
+      onValueChange={field.handleChange}
+      value={field.state.value as string}
+    />
+  );
+}
+
+function SelectTrigger(props: React.ComponentProps<typeof _SelectTrigger>) {
+  const { field, formItemId } = useFormContexts();
+  return (
+    <_SelectTrigger {...props} id={formItemId} onBlur={field.handleBlur} />
+  );
+}
+
+function useFormContexts() {
+  const formItem = React.useContext(FormItemContext);
+  const field = useFieldContext();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  const errors = useStore(field.store, (state) => state.meta.errors);
+
+  return {
+    descriptionId: `${formItem.id}-form-item-description`,
+    errors,
+    field,
+    formItemId: `${formItem.id}-form-item`,
+    messageId: `${formItem.id}-form-item-message`,
+  };
+}
+
+export { useAppForm, useFieldContext, useFormContext, withForm };

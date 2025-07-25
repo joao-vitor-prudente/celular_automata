@@ -1,4 +1,4 @@
-export interface Automaton<TState extends string> {
+export interface Automaton<TState extends string = string> {
   readonly baseState: TState;
   readonly name: string;
   readonly states: Record<
@@ -13,7 +13,7 @@ export interface Automaton<TState extends string> {
   >;
 }
 
-const conwaysGameOfLife: Automaton<"alive" | "dead"> = {
+const conwaysGameOfLife: Automaton = {
   baseState: "dead",
   name: "Conway's Game of Life",
   states: {
@@ -34,6 +34,6 @@ const conwaysGameOfLife: Automaton<"alive" | "dead"> = {
       transitions: [{ if: { alive: 3, dead: 5 }, then: "alive" }],
     },
   },
-};
+} satisfies Automaton<"alive" | "dead">;
 
 export const builtins = { conwaysGameOfLife };

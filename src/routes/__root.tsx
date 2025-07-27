@@ -13,7 +13,7 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <React.Fragment>
-      <main className="h-screen w-screen overflow-y-auto flex flex-col gap-6">
+      <main className="h-screen w-screen overflow-y-auto flex flex-col">
         <header className="w-full flex gap-6 items-center bg-card p-8 border-b">
           <Link to="/">
             <h1 className="text-xl whitespace-nowrap">Celular Automata</h1>
@@ -21,7 +21,7 @@ function RootComponent() {
           <nav className="w-full">
             <ul className="flex gap-2 w-full">
               {objectEntries(builtins).map(([automatonId, automaton]) => (
-                <li>
+                <li key={automatonId}>
                   <Button asChild variant="link">
                     <Link params={{ automatonId }} to="/simulate/$automatonId">
                       {automaton.name}
@@ -32,12 +32,7 @@ function RootComponent() {
 
               <li className="ml-auto">
                 <Button asChild variant="outline">
-                  <Link
-                    params={{ automatonId: "conwaysGameOfLife" }}
-                    to="/create"
-                  >
-                    Create Automaton
-                  </Link>
+                  <Link to="/create/automaton-step">Create Automaton</Link>
                 </Button>
               </li>
             </ul>

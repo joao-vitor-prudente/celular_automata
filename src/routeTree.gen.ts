@@ -9,11 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as CreateRouteImport } from './routes/create'
+import { Route as CreateRouteRouteImport } from './routes/create/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SimulateAutomatonIdRouteImport } from './routes/simulate/$automatonId'
+import { Route as CreateTransitionsStepRouteImport } from './routes/create/transitions-step'
+import { Route as CreateStatesStepRouteImport } from './routes/create/states-step'
+import { Route as CreateAutomatonStepRouteImport } from './routes/create/automaton-step'
 
-const CreateRoute = CreateRouteImport.update({
+const CreateRouteRoute = CreateRouteRouteImport.update({
   id: '/create',
   path: '/create',
   getParentRoute: () => rootRouteImport,
@@ -28,34 +31,77 @@ const SimulateAutomatonIdRoute = SimulateAutomatonIdRouteImport.update({
   path: '/simulate/$automatonId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreateTransitionsStepRoute = CreateTransitionsStepRouteImport.update({
+  id: '/transitions-step',
+  path: '/transitions-step',
+  getParentRoute: () => CreateRouteRoute,
+} as any)
+const CreateStatesStepRoute = CreateStatesStepRouteImport.update({
+  id: '/states-step',
+  path: '/states-step',
+  getParentRoute: () => CreateRouteRoute,
+} as any)
+const CreateAutomatonStepRoute = CreateAutomatonStepRouteImport.update({
+  id: '/automaton-step',
+  path: '/automaton-step',
+  getParentRoute: () => CreateRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/create': typeof CreateRoute
+  '/create': typeof CreateRouteRouteWithChildren
+  '/create/automaton-step': typeof CreateAutomatonStepRoute
+  '/create/states-step': typeof CreateStatesStepRoute
+  '/create/transitions-step': typeof CreateTransitionsStepRoute
   '/simulate/$automatonId': typeof SimulateAutomatonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/create': typeof CreateRoute
+  '/create': typeof CreateRouteRouteWithChildren
+  '/create/automaton-step': typeof CreateAutomatonStepRoute
+  '/create/states-step': typeof CreateStatesStepRoute
+  '/create/transitions-step': typeof CreateTransitionsStepRoute
   '/simulate/$automatonId': typeof SimulateAutomatonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/create': typeof CreateRoute
+  '/create': typeof CreateRouteRouteWithChildren
+  '/create/automaton-step': typeof CreateAutomatonStepRoute
+  '/create/states-step': typeof CreateStatesStepRoute
+  '/create/transitions-step': typeof CreateTransitionsStepRoute
   '/simulate/$automatonId': typeof SimulateAutomatonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create' | '/simulate/$automatonId'
+  fullPaths:
+    | '/'
+    | '/create'
+    | '/create/automaton-step'
+    | '/create/states-step'
+    | '/create/transitions-step'
+    | '/simulate/$automatonId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create' | '/simulate/$automatonId'
-  id: '__root__' | '/' | '/create' | '/simulate/$automatonId'
+  to:
+    | '/'
+    | '/create'
+    | '/create/automaton-step'
+    | '/create/states-step'
+    | '/create/transitions-step'
+    | '/simulate/$automatonId'
+  id:
+    | '__root__'
+    | '/'
+    | '/create'
+    | '/create/automaton-step'
+    | '/create/states-step'
+    | '/create/transitions-step'
+    | '/simulate/$automatonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CreateRoute: typeof CreateRoute
+  CreateRouteRoute: typeof CreateRouteRouteWithChildren
   SimulateAutomatonIdRoute: typeof SimulateAutomatonIdRoute
 }
 
@@ -65,7 +111,7 @@ declare module '@tanstack/react-router' {
       id: '/create'
       path: '/create'
       fullPath: '/create'
-      preLoaderRoute: typeof CreateRouteImport
+      preLoaderRoute: typeof CreateRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,12 +128,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimulateAutomatonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/create/transitions-step': {
+      id: '/create/transitions-step'
+      path: '/transitions-step'
+      fullPath: '/create/transitions-step'
+      preLoaderRoute: typeof CreateTransitionsStepRouteImport
+      parentRoute: typeof CreateRouteRoute
+    }
+    '/create/states-step': {
+      id: '/create/states-step'
+      path: '/states-step'
+      fullPath: '/create/states-step'
+      preLoaderRoute: typeof CreateStatesStepRouteImport
+      parentRoute: typeof CreateRouteRoute
+    }
+    '/create/automaton-step': {
+      id: '/create/automaton-step'
+      path: '/automaton-step'
+      fullPath: '/create/automaton-step'
+      preLoaderRoute: typeof CreateAutomatonStepRouteImport
+      parentRoute: typeof CreateRouteRoute
+    }
   }
 }
 
+interface CreateRouteRouteChildren {
+  CreateAutomatonStepRoute: typeof CreateAutomatonStepRoute
+  CreateStatesStepRoute: typeof CreateStatesStepRoute
+  CreateTransitionsStepRoute: typeof CreateTransitionsStepRoute
+}
+
+const CreateRouteRouteChildren: CreateRouteRouteChildren = {
+  CreateAutomatonStepRoute: CreateAutomatonStepRoute,
+  CreateStatesStepRoute: CreateStatesStepRoute,
+  CreateTransitionsStepRoute: CreateTransitionsStepRoute,
+}
+
+const CreateRouteRouteWithChildren = CreateRouteRoute._addFileChildren(
+  CreateRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CreateRoute: CreateRoute,
+  CreateRouteRoute: CreateRouteRouteWithChildren,
   SimulateAutomatonIdRoute: SimulateAutomatonIdRoute,
 }
 export const routeTree = rootRouteImport

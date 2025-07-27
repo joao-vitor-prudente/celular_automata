@@ -10,6 +10,10 @@ import * as React from "react";
 import { Input as _Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label";
 import {
+  MultiInput as _MultiInput,
+  MultiInputTags as _MultiInputTags,
+} from "@/components/ui/multi-input.tsx";
+import {
   Select as _Select,
   SelectTrigger as _SelectTrigger,
 } from "@/components/ui/select.tsx";
@@ -26,6 +30,8 @@ const { useAppForm, withForm } = createFormHook({
     FormLabel,
     FormMessage,
     Input,
+    MultiInput,
+    MultiInputTags,
     Select,
     SelectTrigger,
   },
@@ -126,7 +132,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 function Input(
   props: Omit<
     React.ComponentProps<typeof _Input>,
-    "id" | "name" | "onBlur" | "onValueChange" | "value"
+    "id" | "name" | "onBlur" | "onChange" | "value"
   >,
 ) {
   const { field, formItemId } = useFormContexts();
@@ -141,6 +147,41 @@ function Input(
         else field.handleChange(e.target.value);
       }}
       value={field.state.value as string}
+      {...props}
+    />
+  );
+}
+
+function MultiInput(
+  props: Omit<
+    React.ComponentProps<typeof _MultiInput>,
+    "id" | "name" | "onBlur" | "onChange" | "value"
+  >,
+) {
+  const { field, formItemId } = useFormContexts();
+  return (
+    <_MultiInput
+      id={formItemId}
+      name={field.name}
+      onBlur={field.handleBlur}
+      onChange={field.handleChange}
+      value={field.state.value as string[]}
+      {...props}
+    />
+  );
+}
+
+function MultiInputTags(
+  props: Omit<
+    React.ComponentProps<typeof _MultiInputTags>,
+    "onChange" | "value"
+  >,
+) {
+  const { field } = useFormContexts();
+  return (
+    <_MultiInputTags
+      onChange={field.handleChange}
+      value={field.state.value as string[]}
       {...props}
     />
   );

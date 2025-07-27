@@ -34,7 +34,7 @@ function RouteComponent() {
   const [isRunning, setIsRunning] = useBooleanState(false);
 
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-6 p-8">
       <Board
         automaton={automaton}
         board={board}

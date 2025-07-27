@@ -4,6 +4,11 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+interface SelectTriggerProps
+  extends React.ComponentProps<typeof SelectPrimitive.Trigger> {
+  size?: "default" | "sm";
+}
+
 function Select(props: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />;
 }
@@ -140,9 +145,7 @@ function SelectTrigger({
   className,
   size = "default",
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
-  size?: "default" | "sm";
-}) {
+}: SelectTriggerProps) {
   return (
     <SelectPrimitive.Trigger
       className={cn(

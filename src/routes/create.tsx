@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Trash } from "lucide-react";
-import { useState } from "react";
-
-import type { Automaton } from "@/lib/automata.ts";
 
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -23,14 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import {
-  arrayRemoveAt,
-  arrayToRecord,
-  objectEntries,
-  objectKeys,
-  objectRemoveKey,
-  stringCapitalize,
-} from "@/lib/extensions";
+import { useAutomataContext } from "@/contexts/automata-context.tsx";
+import { useCreateAutomaton } from "@/hooks/use-create-automaton.ts";
+import { builtins } from "@/lib/automata.ts";
+import { objectEntries, objectKeys, stringCapitalize } from "@/lib/extensions";
 
 export const Route = createFileRoute("/create")({
   component: RouteComponent,
@@ -38,6 +31,13 @@ export const Route = createFileRoute("/create")({
 
 function RouteComponent() {
   const [state, setState] = useCreateAutomaton();
+  const [automata, setAutomata] = useAutomataContext();
+
+  function saveAutomaton() {
+    if (state.slug in automata) return;
+    if (state.slug in builtins) return;
+    setAutomata((prev) => ({ ...prev, [state.slug]: state }));
+  }
 
   return (
     <section className="m-8 grid grid-cols-2 gap-y-6 gap-x-4">
@@ -64,7 +64,7 @@ function RouteComponent() {
       <div className="space-y-2">
         <Label>
           <span className="whitespace-nowrap">Base State</span>
-          <Select>
+          <Select onValueChange={setState.setBaseState} value={state.baseState}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -207,145 +207,14 @@ function RouteComponent() {
         </>
       ))}
       <div className="col-span-2 flex justify-center pt-6">
-        <Button className="w-md">Create</Button>
+        <Button
+          className="w-md"
+          disabled={!setState.validateAutomaton()}
+          onClick={saveAutomaton}
+        >
+          Create
+        </Button>
       </div>
     </section>
   );
-}
-
-function useCreateAutomaton() {
-  const [state, setState] = useState<Automaton>({
-    baseState: "",
-    name: "",
-    slug: "",
-    states: {},
-  });
-
-  function setName(name: string) {
-    setState((prev) => ({ ...prev, name }));
-  }
-
-  function setSlug(slug: string) {
-    setState((prev) => ({ ...prev, slug }));
-  }
-
-  function addState(stateName: string) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: { color: "", transitions: [] },
-      },
-    }));
-  }
-
-  function setStateColor(stateName: string, color: string) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: { ...prev.states[stateName], color },
-      },
-    }));
-  }
-
-  function removeState(stateName: string) {
-    setState((prev) => ({
-      ...prev,
-      states: objectRemoveKey(prev.states, stateName),
-    }));
-  }
-
-  function setTransitionThen(
-    stateName: string,
-    transitionIndex: number,
-    then: string,
-  ) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: {
-          ...prev.states[stateName],
-          transitions: prev.states[stateName].transitions.map((t, i) =>
-            i !== transitionIndex ? t : { ...t, then },
-          ),
-        },
-      },
-    }));
-  }
-
-  function addTransition(stateName: string) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: {
-          ...prev.states[stateName],
-          transitions: [
-            ...prev.states[stateName].transitions,
-            {
-              if: arrayToRecord(objectKeys(prev.states), 0),
-              then:
-                objectKeys(prev.states).find((state) => state !== stateName) ??
-                stateName,
-            },
-          ],
-        },
-      },
-    }));
-  }
-
-  function removeTransition(stateName: string, transitionIndex: number) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: {
-          ...prev.states[stateName],
-          transitions: arrayRemoveAt(
-            prev.states[stateName].transitions,
-            transitionIndex,
-          ),
-        },
-      },
-    }));
-  }
-
-  function setTransitionIf(
-    stateName: string,
-    transitionIndex: number,
-    stateIf: string,
-    count: number,
-  ) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: {
-          ...prev.states[stateName],
-          transitions: prev.states[stateName].transitions.map((t, i) =>
-            i !== transitionIndex
-              ? t
-              : { ...t, if: { ...t.if, [stateIf]: count } },
-          ),
-        },
-      },
-    }));
-  }
-
-  return [
-    state,
-    {
-      addState,
-      addTransition,
-      removeState,
-      removeTransition,
-      setName,
-      setSlug,
-      setStateColor,
-      setTransitionIf,
-      setTransitionThen,
-    },
-  ] as const;
 }

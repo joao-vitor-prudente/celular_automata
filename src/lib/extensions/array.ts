@@ -7,6 +7,21 @@ export function arrayCount<T extends string>(
   }, {});
 }
 
+export function arrayEquals<T>(array1: T[], array2: T[]): boolean {
+  return (
+    array1.length === array2.length &&
+    array1.every((item, index) => item === array2[index])
+  );
+}
+
+export function arrayRemoveAt<T>(array: T[], index: number): T[] {
+  return [...array.slice(0, index), ...array.slice(index + 1)];
+}
+
+export function arraySum(array: number[]): number {
+  return array.reduce((acc, cur) => acc + cur, 0);
+}
+
 export function arrayToRecord<T extends PropertyKey, K>(
   arr: T[],
   fillValue: K,
@@ -16,8 +31,4 @@ export function arrayToRecord<T extends PropertyKey, K>(
     return acc;
   }, {});
   return res as Record<T, K>;
-}
-
-export function arrayRemoveAt<T>(array: T[], index: number): T[] {
-  return [...array.slice(0, index), ...array.slice(index + 1)];
 }

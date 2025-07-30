@@ -16,3 +16,7 @@ export function objectRemoveKey<T extends object, K extends keyof T>(
     objectEntries(obj).filter(([k]) => k !== key),
   ) as Omit<T, K>;
 }
+
+export function objectValues<T extends object>(obj: T): T[keyof T][] {
+  return Object.values(obj) as T[keyof T][];
+}

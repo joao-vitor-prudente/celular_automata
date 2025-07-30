@@ -11,6 +11,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select.tsx";
+import { useAutomataContext } from "@/contexts/automata-context.tsx";
 import { useBooleanState } from "@/hooks/use-boolean-state.ts";
 import { builtins } from "@/lib/automata.ts";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
@@ -20,9 +21,11 @@ export const Route = createFileRoute("/simulate/$slug")({
 });
 
 function RouteComponent() {
-  const params = Route.useParams();
-  const slug = params.slug as keyof typeof builtins;
-  const automaton = builtins[slug];
+  const { slug } = Route.useParams();
+  const [automata] = useAutomataContext();
+  const automaton = builtins[slug] ?? automata[slug];
+  if (!automaton) throw new Error("No automaton found for given slug.");
+
   const form = useAppForm({
     defaultValues: { fps: 5, stateBrush: automaton.baseState },
     validators: {

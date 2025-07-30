@@ -17,3 +17,7 @@ export function arrayToRecord<T extends PropertyKey, K>(
   }, {});
   return res as Record<T, K>;
 }
+
+export function arrayRemoveAt<T>(array: T[], index: number): T[] {
+  return [...array.slice(0, index), ...array.slice(index + 1)];
+}

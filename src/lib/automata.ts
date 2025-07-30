@@ -1,6 +1,7 @@
 export interface Automaton<TState extends string = string> {
   readonly baseState: TState;
   readonly name: string;
+  readonly slug: string;
   readonly states: Record<
     TState,
     {
@@ -16,6 +17,7 @@ export interface Automaton<TState extends string = string> {
 const conwaysGameOfLife: Automaton = {
   baseState: "dead",
   name: "Conway's Game of Life",
+  slug: "conways_game_of_life",
   states: {
     alive: {
       color: "oklch(0.985 0 0)",

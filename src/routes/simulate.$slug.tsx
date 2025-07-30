@@ -15,14 +15,14 @@ import { useBooleanState } from "@/hooks/use-boolean-state.ts";
 import { builtins } from "@/lib/automata.ts";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
 
-export const Route = createFileRoute("/simulate/$automatonId")({
+export const Route = createFileRoute("/simulate/$slug")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const params = Route.useParams();
-  const automatonId = params.automatonId as keyof typeof builtins;
-  const automaton = builtins[automatonId];
+  const slug = params.slug as keyof typeof builtins;
+  const automaton = builtins[slug];
   const form = useAppForm({
     defaultValues: { fps: 5, stateBrush: automaton.baseState },
     validators: {

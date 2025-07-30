@@ -12,29 +12,37 @@ import { Input } from "@/components/ui/input";
 
 interface MultiInputProps
   extends Omit<ComponentProps<typeof Input>, "onChange" | "value"> {
-  onChange: Dispatch<SetStateAction<string[]>>;
+  onAdd?: (value: string) => void;
+  onChange?: Dispatch<SetStateAction<string[]>>;
   value: string[];
 }
 
 interface MultiInputTagsProps
   extends Omit<ComponentProps<typeof Badge>, "onChange"> {
-  onChange: Dispatch<SetStateAction<string[]>>;
+  onChange?: Dispatch<SetStateAction<string[]>>;
+  onRemove?: (value: string) => void;
   value: string[];
 }
 
-export function MultiInput({ onChange, value, ...props }: MultiInputProps) {
+export function MultiInput({
+  onAdd,
+  onChange,
+  value,
+  ...props
+}: MultiInputProps) {
   const [pending, setPending] = useState("");
 
   function addPending() {
     if (!pending) return;
-    onChange(Array.from(new Set([pending, ...value])));
+    onChange?.(Array.from(new Set([pending, ...value])));
+    onAdd?.(pending);
     setPending("");
   }
 
   return (
-    <div className="flex">
+    <div className="flex w-full">
       <Input
-        className="rounded-r-none rounded-bl-none"
+        className="rounded-r-none"
         onChange={(e) => {
           setPending(e.target.value);
         }}
@@ -51,7 +59,7 @@ export function MultiInput({ onChange, value, ...props }: MultiInputProps) {
         {...props}
       />
       <Button
-        className="rounded-l-none border border-l-0 rounded-br-none"
+        className="rounded-l-none border border-l-0"
         onClick={addPending}
         type="button"
         variant="secondary"
@@ -64,6 +72,7 @@ export function MultiInput({ onChange, value, ...props }: MultiInputProps) {
 
 export function MultiInputTags({
   onChange,
+  onRemove,
   value,
   ...props
 }: MultiInputTagsProps) {
@@ -75,7 +84,8 @@ export function MultiInputTags({
           <button
             className="w-3 ml-2"
             onClick={() => {
-              onChange(value.filter((i) => i !== item));
+              onChange?.(value.filter((i) => i !== item));
+              onRemove?.(item);
             }}
             type="button"
           >

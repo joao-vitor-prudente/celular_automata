@@ -20,10 +20,10 @@ function RootComponent() {
           </Link>
           <nav className="w-full">
             <ul className="flex gap-2 w-full">
-              {objectEntries(builtins).map(([automatonId, automaton]) => (
-                <li key={automatonId}>
+              {objectEntries(builtins).map(([slug, automaton]) => (
+                <li key={slug}>
                   <Button asChild variant="link">
-                    <Link params={{ automatonId }} to="/simulate/$automatonId">
+                    <Link params={{ slug }} to="/simulate/$slug">
                       {automaton.name}
                     </Link>
                   </Button>
@@ -32,7 +32,7 @@ function RootComponent() {
 
               <li className="ml-auto">
                 <Button asChild variant="outline">
-                  <Link to="/create/automaton-step">Create Automaton</Link>
+                  <Link to="/create">Create Automaton</Link>
                 </Button>
               </li>
             </ul>

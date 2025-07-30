@@ -20,7 +20,7 @@ const defaultValues: AutomatonStepData = { id: "", name: "", stateNames: [] };
 
 function RouteComponent() {
   const navigate = Route.useNavigate();
-  const [_data, setData] = useCreateAutomaton();
+  const [_data, setData] = useCreateAutomaton<"automaton">();
   const form = useAppForm({
     defaultValues,
     onSubmit: async ({ value }) => {

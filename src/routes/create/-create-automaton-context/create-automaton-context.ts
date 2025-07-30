@@ -39,6 +39,7 @@ export type CreateAutomatonContextTransitionsStep = Merge<
 >;
 
 export interface StatesStepData {
+  baseState: string;
   statesData: { color: string; name: string }[];
 }
 

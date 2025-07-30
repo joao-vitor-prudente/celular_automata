@@ -5,7 +5,7 @@ import type { GetterSetterPair } from "@/lib/extensions/types.ts";
 
 import { useLocalStorageState } from "@/hooks/use-local-storage-state.ts";
 
-type AutomataContext = GetterSetterPair<Partial<Record<string, Automaton>>>;
+type AutomataContext = GetterSetterPair<Record<string, Automaton>>;
 
 const AutomataContext = createContext<AutomataContext | null>(null);
 

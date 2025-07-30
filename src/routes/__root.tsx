@@ -1,4 +1,9 @@
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  Link,
+  Outlet,
+  useLocation,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { Button } from "@/components/ui/button.tsx";
@@ -14,6 +19,8 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  const currentRoute = useLocation();
+
   return (
     <AutomataProvider>
       <main className="h-screen w-screen overflow-y-auto flex flex-col">
@@ -25,7 +32,11 @@ function RootComponent() {
             <ul className="flex gap-2 w-full">
               {objectEntries(builtins).map(([slug, automaton]) => (
                 <li key={slug}>
-                  <Button asChild variant="link">
+                  <Button
+                    aria-disabled={currentRoute.href === `/simulate/${slug}`}
+                    asChild
+                    variant="link"
+                  >
                     <Link params={{ slug }} to="/simulate/$slug">
                       {automaton.name}
                     </Link>
@@ -37,7 +48,13 @@ function RootComponent() {
                 {([automata]) =>
                   objectEntries(automata).map(([slug, automaton]) => (
                     <li key={slug}>
-                      <Button asChild variant="link">
+                      <Button
+                        aria-disabled={
+                          currentRoute.href === `/simulate/${slug}`
+                        }
+                        asChild
+                        variant="link"
+                      >
                         <Link params={{ slug }} to="/simulate/$slug">
                           {automaton.name}
                         </Link>
@@ -47,7 +64,11 @@ function RootComponent() {
                 }
               </AutomataConsumer>
               <li className="ml-auto">
-                <Button asChild variant="outline">
+                <Button
+                  aria-disabled={currentRoute.href === "/create"}
+                  asChild
+                  variant="outline"
+                >
                   <Link to="/create">Create Automaton</Link>
                 </Button>
               </li>

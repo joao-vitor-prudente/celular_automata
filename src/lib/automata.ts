@@ -38,6 +38,6 @@ const conwaysGameOfLife: Automaton = {
   },
 } satisfies Automaton<"alive" | "dead">;
 
-export const builtins: Partial<Record<string, Automaton>> = {
+export const builtins: Record<string, Automaton> = {
   conwaysGameOfLife,
 };

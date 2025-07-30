@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select.tsx";
 import { useAutomataContext } from "@/contexts/automata-context.tsx";
 import { useBooleanState } from "@/hooks/use-boolean-state.ts";
-import { builtins } from "@/lib/automata.ts";
+import { type Automaton, builtins } from "@/lib/automata.ts";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
 
 export const Route = createFileRoute("/simulate/$slug")({
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/simulate/$slug")({
 function RouteComponent() {
   const { slug } = Route.useParams();
   const [automata] = useAutomataContext();
-  const automaton = builtins[slug] ?? automata[slug];
+  const automaton = builtins[slug] ?? (automata[slug] as Automaton | null);
   if (!automaton) throw new Error("No automaton found for given slug.");
 
   const form = useAppForm({
@@ -37,7 +37,10 @@ function RouteComponent() {
   const [isRunning, setIsRunning] = useBooleanState(false);
 
   return (
-    <div className="flex gap-6 p-8">
+    <div className="grid grid-cols-[auto_1fr] gap-6 p-8">
+      <header className="col-span-2">
+        <h3 className="text-2xl">{automaton.name}</h3>
+      </header>
       <Board
         automaton={automaton}
         board={board}

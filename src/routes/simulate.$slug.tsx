@@ -1,5 +1,6 @@
 import { useStore } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { z } from "zod";
 
 import { Board } from "@/components/board";
@@ -12,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select.tsx";
 import { useAutomataContext } from "@/contexts/automata-context.tsx";
-import { useBooleanState } from "@/hooks/use-boolean-state.ts";
 import { type Automaton, builtins } from "@/lib/automata.ts";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
 
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/simulate/$slug")({
 function RouteComponent() {
   const { slug } = Route.useParams();
   const [automata] = useAutomataContext();
-  const automaton = builtins[slug] ?? (automata[slug] as Automaton | null);
+  const automaton = (builtins[slug] ?? automata[slug]) as Automaton | undefined;
   if (!automaton) throw new Error("No automaton found for given slug.");
 
   const form = useAppForm({
@@ -34,7 +34,7 @@ function RouteComponent() {
   });
   const formValues = useStore(form.store, (state) => state.values);
   const board = useBoard(32, automaton);
-  const [isRunning, setIsRunning] = useBooleanState(false);
+  const [isRunning, setIsRunning] = useState(false);
 
   return (
     <div className="grid grid-cols-[auto_1fr] gap-6 p-8">
@@ -93,7 +93,11 @@ function RouteComponent() {
             )}
           </form.AppField>
         </form.AppForm>
-        <Button onClick={setIsRunning.toggle}>
+        <Button
+          onClick={() => {
+            setIsRunning((prev) => !prev);
+          }}
+        >
           {isRunning ? "Stop Automaton" : "Start Automaton"}
         </Button>
         <div className="flex gap-2">

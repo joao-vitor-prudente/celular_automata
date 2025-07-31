@@ -6,7 +6,7 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
   return (
-    <div className="m-auto pb-32 w-sm text-center space-y-8">
+    <div className="m-auto w-sm space-y-8 pb-32 text-center">
       <h2 className="text-2xl">Welcome to Celular Automata</h2>
       <p className="text-lg text-muted-foreground">
         A complete tool for creating and simulating any celular automaton your

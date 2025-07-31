@@ -47,7 +47,7 @@ function RouteComponent() {
 
   return (
     <div className="grid grid-cols-[auto_1fr] gap-6 p-8">
-      <header className="col-span-2 flex gap-2 items-center">
+      <header className="col-span-2 flex items-center gap-2">
         <h3 className="text-2xl">{automaton.name}</h3>
         <nav>
           <ul className="flex">
@@ -85,7 +85,7 @@ function RouteComponent() {
         isRunning={isRunning}
         stateBrush={formValues.stateBrush}
       />
-      <section className="max-w-sm flex flex-col gap-4">
+      <section className="flex max-w-sm flex-col gap-4">
         <header>
           <h4 className="text-lg">Simulation Configuration</h4>
         </header>

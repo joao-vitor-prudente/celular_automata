@@ -27,7 +27,7 @@ export function AutomatonForm(props: AutomatonFormProps) {
   const addStateId = useId();
 
   return (
-    <section className="grid grid-cols-2 gap-y-6 gap-x-4 w-full">
+    <section className="grid w-full grid-cols-2 gap-x-4 gap-y-6">
       <div className="space-y-2">
         <Label htmlFor={nameId}>
           <span>Name</span>

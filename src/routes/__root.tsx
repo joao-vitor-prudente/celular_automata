@@ -19,13 +19,13 @@ function RootComponent() {
   const [automata] = useAppContext().automata;
   return (
     <>
-      <main className="h-screen w-screen overflow-y-auto flex flex-col">
-        <header className="w-full flex gap-6 items-center bg-card p-8 border-b">
+      <main className="flex h-screen w-screen flex-col overflow-y-auto">
+        <header className="flex w-full items-center gap-6 border-b bg-card p-8">
           <Link to="/">
             <h1 className="text-xl whitespace-nowrap">Celular Automata</h1>
           </Link>
           <nav className="w-full">
-            <ul className="flex gap-2 w-full">
+            <ul className="flex w-full gap-2">
               {builtins.map((automaton) => (
                 <li key={automaton.slug}>
                   <Button

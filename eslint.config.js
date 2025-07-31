@@ -4,8 +4,10 @@ import perfectionist from "eslint-plugin-perfectionist";
 import prettierPlugin from "eslint-plugin-prettier/recommended";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
+import tailwind from "eslint-plugin-tailwindcss";
 import { globalIgnores } from "eslint/config";
 import globals from "globals";
+import path from "path";
 import tslint from "typescript-eslint";
 
 export default tslint.config([
@@ -18,6 +20,7 @@ export default tslint.config([
       reactHooks.configs["recommended-latest"],
       reactRefresh.configs.vite,
       perfectionist.configs["recommended-natural"],
+      tailwind.configs["flat/recommended"],
       prettierPlugin,
       prettierConfig,
     ],
@@ -44,6 +47,11 @@ export default tslint.config([
         },
       ],
       "react-hooks/exhaustive-deps": "off",
+    },
+    settings: {
+      tailwindcss: {
+        config: path.join(import.meta.dirname, "./src/index.css"),
+      },
     },
   },
   {

@@ -77,12 +77,12 @@ export function MultiInputTags({
   ...props
 }: MultiInputTagsProps) {
   return (
-    <div className="border rounded-b-md min-h-[2.5rem] overflow-y-auto p-2 flex gap-2 flex-wrap items-center">
+    <div className="flex min-h-[2.5rem] flex-wrap items-center gap-2 overflow-y-auto rounded-b-md border p-2">
       {value.map((item, idx) => (
         <Badge key={idx} variant="secondary" {...props}>
           {item}
           <button
-            className="w-3 ml-2"
+            className="ml-2 w-3"
             onClick={() => {
               onChange?.(value.filter((i) => i !== item));
               onRemove?.(item);

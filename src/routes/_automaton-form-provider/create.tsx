@@ -22,7 +22,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="p-8 flex flex-col items-center gap-12">
+    <div className="flex flex-col items-center gap-12 p-8">
       <AutomatonForm />
       <Button className="w-md" onClick={saveAutomaton}>
         Create

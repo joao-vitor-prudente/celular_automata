@@ -111,7 +111,7 @@ function TransitionForm(props: TransitionFormProps) {
   const [state, setState] = useAutomatonFormContext();
   const thenId = useId();
   return (
-    <div className="flex gap-2 items-end">
+    <div className="flex items-end gap-2">
       <ul className="flex gap-2">
         {objectKeys(state.states).map((s) => (
           <li key={s}>

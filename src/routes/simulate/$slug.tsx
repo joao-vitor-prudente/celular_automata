@@ -1,5 +1,6 @@
 import { useStore } from "@tanstack/react-form";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Clipboard, Pencil } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -11,7 +12,12 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { type Automaton, builtins } from "@/lib/automata.ts";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
+import { builtins } from "@/lib/automata.ts";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
 
 import { Board } from "./-board";
@@ -24,7 +30,9 @@ export const Route = createFileRoute("/simulate/$slug")({
 function RouteComponent() {
   const { slug } = Route.useParams();
   const [automata] = useAppContext().automata;
-  const automaton = (builtins[slug] ?? automata[slug]) as Automaton | undefined;
+  const automaton =
+    builtins.find((a) => a.slug === slug) ??
+    automata.find((a) => a.slug === slug);
   if (!automaton) throw new Error("No automaton found for given slug.");
 
   const form = useAppForm({
@@ -39,8 +47,36 @@ function RouteComponent() {
 
   return (
     <div className="grid grid-cols-[auto_1fr] gap-6 p-8">
-      <header className="col-span-2">
+      <header className="col-span-2 flex gap-2 items-center">
         <h3 className="text-2xl">{automaton.name}</h3>
+        <nav>
+          <ul className="flex">
+            <li hidden={slug in builtins}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button asChild className="size-5" variant="ghost">
+                    <Link search={{ slug: automaton.slug }} to="/edit">
+                      <Pencil />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Edit Automaton</TooltipContent>
+              </Tooltip>
+            </li>
+            <li>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button asChild className="size-5" variant="ghost">
+                    <Link search={{ slug: automaton.slug }} to="/create">
+                      <Clipboard />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Copy Automaton</TooltipContent>
+              </Tooltip>
+            </li>
+          </ul>
+        </nav>
       </header>
       <Board
         automaton={automaton}

@@ -10,13 +10,10 @@ import {
   objectRemoveKey,
 } from "@/lib/extensions";
 
-export function useCreateAutomaton() {
-  const [state, setState] = useState<Automaton>({
-    baseState: "",
-    name: "",
-    slug: "",
-    states: {},
-  });
+export function useAutomatonForm(initial?: Automaton) {
+  const [state, setState] = useState<Automaton>(
+    initial ?? { baseState: "", name: "", slug: "", states: {} },
+  );
 
   function setName(name: string) {
     setState((prev) => {

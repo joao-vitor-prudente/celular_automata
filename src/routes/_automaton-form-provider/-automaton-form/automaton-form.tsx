@@ -1,8 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Fragment, useId } from "react";
 
-import { useAppContext } from "@/app-context.tsx";
-import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { MultiInput } from "@/components/ui/multi-input.tsx";
@@ -13,33 +10,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { builtins } from "@/lib/automata.ts";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
-import { StateCard } from "@/routes/_create-provider/create/-state-card.tsx";
-import { TransitionsCard } from "@/routes/_create-provider/create/-transitions-card.tsx";
+import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
+import { StateCard } from "@/routes/_automaton-form-provider/-automaton-form/state-card.tsx";
+import { TransitionsCard } from "@/routes/_automaton-form-provider/-automaton-form/transitions-card.tsx";
 
-import { useCreateAutomatonContext } from "../-create-automaton-context.tsx";
+interface AutomatonFormProps {
+  readonly lockSlug?: boolean;
+}
 
-export const Route = createFileRoute("/_create-provider/create")({
-  component: RouteComponent,
-});
-
-function RouteComponent() {
-  const [state, setState] = useCreateAutomatonContext();
-  const [automata, setAutomata] = useAppContext().automata;
+export function AutomatonForm(props: AutomatonFormProps) {
+  const [state, setState] = useAutomatonFormContext();
   const nameId = useId();
   const slugId = useId();
   const baseStateId = useId();
   const addStateId = useId();
 
-  function saveAutomaton() {
-    if (state.slug in automata) return;
-    if (state.slug in builtins) return;
-    setAutomata((prev) => ({ ...prev, [state.slug]: state }));
-  }
-
   return (
-    <section className="m-8 grid grid-cols-2 gap-y-6 gap-x-4">
+    <section className="grid grid-cols-2 gap-y-6 gap-x-4 w-full">
       <div className="space-y-2">
         <Label htmlFor={nameId}>
           <span>Name</span>
@@ -56,11 +44,13 @@ function RouteComponent() {
         <Label htmlFor={slugId}>
           <span>Slug</span>
           <Input
+            disabled={props.lockSlug}
             id={slugId}
             name="slug"
             onChange={(e) => {
               setState.setSlug(e.target.value);
             }}
+            readOnly={props.lockSlug}
             value={state.slug}
           />
         </Label>
@@ -96,11 +86,6 @@ function RouteComponent() {
           <TransitionsCard stateName={stateName} />
         </Fragment>
       ))}
-      <div className="col-span-2 flex justify-center pt-6">
-        <Button className="w-md" onClick={saveAutomaton}>
-          Create
-        </Button>
-      </div>
     </section>
   );
 }

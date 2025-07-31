@@ -12,14 +12,15 @@ import {
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { stringCapitalize } from "@/lib/extensions";
-import { useCreateAutomatonContext } from "@/routes/_create-provider/-create-automaton-context.tsx";
+
+import { useAutomatonFormContext } from "./automaton-form-context.tsx";
 
 interface StateCardProps {
   readonly stateName: string;
 }
 
 export function StateCard(props: StateCardProps) {
-  const [state, setState] = useCreateAutomatonContext();
+  const [state, setState] = useAutomatonFormContext();
   const colorId = useId();
   return (
     <Card className="rounded-r-none">

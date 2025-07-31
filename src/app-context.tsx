@@ -5,7 +5,7 @@ import type { Automaton } from "@/lib/automata.ts";
 import { type GetterSetterPair, useLocalStorageState } from "@/lib/extensions";
 
 interface AppContext {
-  automata: GetterSetterPair<Record<string, Automaton>>;
+  automata: GetterSetterPair<Automaton[]>;
 }
 
 const AppContext = createContext<AppContext | null>(null);
@@ -15,9 +15,10 @@ interface AppProviderProps {
 }
 
 export function AppProvider(props: AppProviderProps): ReactNode {
-  const [automata, setAutomata] = useLocalStorageState<
-    Record<string, Automaton>
-  >({}, "automata");
+  const [automata, setAutomata] = useLocalStorageState<Automaton[]>(
+    [],
+    "automata",
+  );
   return (
     <AppContext.Provider value={{ automata: [automata, setAutomata] }}>
       {props.children}

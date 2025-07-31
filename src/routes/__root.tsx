@@ -9,7 +9,6 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useAppContext } from "@/app-context.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { builtins } from "@/lib/automata.ts";
-import { objectEntries } from "@/lib/extensions";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -27,28 +26,38 @@ function RootComponent() {
           </Link>
           <nav className="w-full">
             <ul className="flex gap-2 w-full">
-              {objectEntries(builtins).map(([slug, automaton]) => (
-                <li key={slug}>
+              {builtins.map((automaton) => (
+                <li key={automaton.slug}>
                   <Button
-                    aria-disabled={currentRoute.href === `/simulate/${slug}`}
+                    aria-disabled={
+                      currentRoute.href === `/simulate/${automaton.slug}`
+                    }
                     asChild
                     variant="link"
                   >
-                    <Link params={{ slug }} to="/simulate/$slug">
+                    <Link
+                      params={{ slug: automaton.slug }}
+                      to="/simulate/$slug"
+                    >
                       {automaton.name}
                     </Link>
                   </Button>
                 </li>
               ))}
               <div className="w-[2px] bg-muted" />
-              {objectEntries(automata).map(([slug, automaton]) => (
-                <li key={slug}>
+              {automata.map((automaton) => (
+                <li key={automaton.slug}>
                   <Button
-                    aria-disabled={currentRoute.href === `/simulate/${slug}`}
+                    aria-disabled={
+                      currentRoute.href === `/simulate/${automaton.slug}`
+                    }
                     asChild
                     variant="link"
                   >
-                    <Link params={{ slug }} to="/simulate/$slug">
+                    <Link
+                      params={{ slug: automaton.slug }}
+                      to="/simulate/$slug"
+                    >
                       {automaton.name}
                     </Link>
                   </Button>

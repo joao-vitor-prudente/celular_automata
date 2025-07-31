@@ -21,7 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select.tsx";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
-import { useCreateAutomatonContext } from "@/routes/_create-provider/-create-automaton-context.tsx";
+
+import { useAutomatonFormContext } from "./automaton-form-context.tsx";
 
 interface CountSelectProps extends TransitionFormProps {
   readonly state: string;
@@ -37,7 +38,7 @@ interface TransitionsCardProps {
 }
 
 export function TransitionsCard(props: TransitionsCardProps) {
-  const [state, setState] = useCreateAutomatonContext();
+  const [state, setState] = useAutomatonFormContext();
   return (
     <Card className="rounded-l-none">
       <CardHeader>
@@ -75,7 +76,7 @@ export function TransitionsCard(props: TransitionsCardProps) {
 }
 
 function CountSelect(props: CountSelectProps) {
-  const [_, setState] = useCreateAutomatonContext();
+  const [_, setState] = useAutomatonFormContext();
   const countId = useId();
   return (
     <Label className="flex-col items-start" htmlFor={countId}>
@@ -107,7 +108,7 @@ function CountSelect(props: CountSelectProps) {
 }
 
 function TransitionForm(props: TransitionFormProps) {
-  const [state, setState] = useCreateAutomatonContext();
+  const [state, setState] = useAutomatonFormContext();
   const thenId = useId();
   return (
     <div className="flex gap-2 items-end">

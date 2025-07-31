@@ -38,6 +38,4 @@ const conwaysGameOfLife: Automaton = {
   },
 } satisfies Automaton<"alive" | "dead">;
 
-export const builtins: Record<string, Automaton> = {
-  conwaysGameOfLife,
-};
+export const builtins: Automaton[] = [conwaysGameOfLife];

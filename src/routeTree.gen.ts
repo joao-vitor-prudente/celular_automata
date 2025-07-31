@@ -9,15 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as CreateProviderRouteRouteImport } from './routes/_create-provider/route'
+import { Route as AutomatonFormProviderRouteRouteImport } from './routes/_automaton-form-provider/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SimulateSlugRouteImport } from './routes/simulate/$slug'
-import { Route as CreateProviderCreateRouteRouteImport } from './routes/_create-provider/create/route'
+import { Route as AutomatonFormProviderEditRouteImport } from './routes/_automaton-form-provider/edit'
+import { Route as AutomatonFormProviderCreateRouteImport } from './routes/_automaton-form-provider/create'
 
-const CreateProviderRouteRoute = CreateProviderRouteRouteImport.update({
-  id: '/_create-provider',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AutomatonFormProviderRouteRoute =
+  AutomatonFormProviderRouteRouteImport.update({
+    id: '/_automaton-form-provider',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -28,56 +30,66 @@ const SimulateSlugRoute = SimulateSlugRouteImport.update({
   path: '/simulate/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CreateProviderCreateRouteRoute =
-  CreateProviderCreateRouteRouteImport.update({
+const AutomatonFormProviderEditRoute =
+  AutomatonFormProviderEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => AutomatonFormProviderRouteRoute,
+  } as any)
+const AutomatonFormProviderCreateRoute =
+  AutomatonFormProviderCreateRouteImport.update({
     id: '/create',
     path: '/create',
-    getParentRoute: () => CreateProviderRouteRoute,
+    getParentRoute: () => AutomatonFormProviderRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/create': typeof CreateProviderCreateRouteRoute
+  '/create': typeof AutomatonFormProviderCreateRoute
+  '/edit': typeof AutomatonFormProviderEditRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/create': typeof CreateProviderCreateRouteRoute
+  '/create': typeof AutomatonFormProviderCreateRoute
+  '/edit': typeof AutomatonFormProviderEditRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_create-provider': typeof CreateProviderRouteRouteWithChildren
-  '/_create-provider/create': typeof CreateProviderCreateRouteRoute
+  '/_automaton-form-provider': typeof AutomatonFormProviderRouteRouteWithChildren
+  '/_automaton-form-provider/create': typeof AutomatonFormProviderCreateRoute
+  '/_automaton-form-provider/edit': typeof AutomatonFormProviderEditRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create' | '/simulate/$slug'
+  fullPaths: '/' | '/create' | '/edit' | '/simulate/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create' | '/simulate/$slug'
+  to: '/' | '/create' | '/edit' | '/simulate/$slug'
   id:
     | '__root__'
     | '/'
-    | '/_create-provider'
-    | '/_create-provider/create'
+    | '/_automaton-form-provider'
+    | '/_automaton-form-provider/create'
+    | '/_automaton-form-provider/edit'
     | '/simulate/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CreateProviderRouteRoute: typeof CreateProviderRouteRouteWithChildren
+  AutomatonFormProviderRouteRoute: typeof AutomatonFormProviderRouteRouteWithChildren
   SimulateSlugRoute: typeof SimulateSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_create-provider': {
-      id: '/_create-provider'
+    '/_automaton-form-provider': {
+      id: '/_automaton-form-provider'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof CreateProviderRouteRouteImport
+      preLoaderRoute: typeof AutomatonFormProviderRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -94,30 +106,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimulateSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_create-provider/create': {
-      id: '/_create-provider/create'
+    '/_automaton-form-provider/edit': {
+      id: '/_automaton-form-provider/edit'
+      path: '/edit'
+      fullPath: '/edit'
+      preLoaderRoute: typeof AutomatonFormProviderEditRouteImport
+      parentRoute: typeof AutomatonFormProviderRouteRoute
+    }
+    '/_automaton-form-provider/create': {
+      id: '/_automaton-form-provider/create'
       path: '/create'
       fullPath: '/create'
-      preLoaderRoute: typeof CreateProviderCreateRouteRouteImport
-      parentRoute: typeof CreateProviderRouteRoute
+      preLoaderRoute: typeof AutomatonFormProviderCreateRouteImport
+      parentRoute: typeof AutomatonFormProviderRouteRoute
     }
   }
 }
 
-interface CreateProviderRouteRouteChildren {
-  CreateProviderCreateRouteRoute: typeof CreateProviderCreateRouteRoute
+interface AutomatonFormProviderRouteRouteChildren {
+  AutomatonFormProviderCreateRoute: typeof AutomatonFormProviderCreateRoute
+  AutomatonFormProviderEditRoute: typeof AutomatonFormProviderEditRoute
 }
 
-const CreateProviderRouteRouteChildren: CreateProviderRouteRouteChildren = {
-  CreateProviderCreateRouteRoute: CreateProviderCreateRouteRoute,
-}
+const AutomatonFormProviderRouteRouteChildren: AutomatonFormProviderRouteRouteChildren =
+  {
+    AutomatonFormProviderCreateRoute: AutomatonFormProviderCreateRoute,
+    AutomatonFormProviderEditRoute: AutomatonFormProviderEditRoute,
+  }
 
-const CreateProviderRouteRouteWithChildren =
-  CreateProviderRouteRoute._addFileChildren(CreateProviderRouteRouteChildren)
+const AutomatonFormProviderRouteRouteWithChildren =
+  AutomatonFormProviderRouteRoute._addFileChildren(
+    AutomatonFormProviderRouteRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CreateProviderRouteRoute: CreateProviderRouteRouteWithChildren,
+  AutomatonFormProviderRouteRoute: AutomatonFormProviderRouteRouteWithChildren,
   SimulateSlugRoute: SimulateSlugRoute,
 }
 export const routeTree = rootRouteImport

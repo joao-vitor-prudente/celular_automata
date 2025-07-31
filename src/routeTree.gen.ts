@@ -9,13 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as CreateRouteRouteImport } from './routes/create/route'
+import { Route as CreateProviderRouteRouteImport } from './routes/_create-provider/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SimulateSlugRouteImport } from './routes/simulate/$slug'
+import { Route as CreateProviderCreateRouteRouteImport } from './routes/_create-provider/create/route'
 
-const CreateRouteRoute = CreateRouteRouteImport.update({
-  id: '/create',
-  path: '/create',
+const CreateProviderRouteRoute = CreateProviderRouteRouteImport.update({
+  id: '/_create-provider',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,21 +28,28 @@ const SimulateSlugRoute = SimulateSlugRouteImport.update({
   path: '/simulate/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreateProviderCreateRouteRoute =
+  CreateProviderCreateRouteRouteImport.update({
+    id: '/create',
+    path: '/create',
+    getParentRoute: () => CreateProviderRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/create': typeof CreateRouteRoute
+  '/create': typeof CreateProviderCreateRouteRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/create': typeof CreateRouteRoute
+  '/create': typeof CreateProviderCreateRouteRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/create': typeof CreateRouteRoute
+  '/_create-provider': typeof CreateProviderRouteRouteWithChildren
+  '/_create-provider/create': typeof CreateProviderCreateRouteRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRouteTypes {
@@ -50,22 +57,27 @@ export interface FileRouteTypes {
   fullPaths: '/' | '/create' | '/simulate/$slug'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/create' | '/simulate/$slug'
-  id: '__root__' | '/' | '/create' | '/simulate/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/_create-provider'
+    | '/_create-provider/create'
+    | '/simulate/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CreateRouteRoute: typeof CreateRouteRoute
+  CreateProviderRouteRoute: typeof CreateProviderRouteRouteWithChildren
   SimulateSlugRoute: typeof SimulateSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/create': {
-      id: '/create'
-      path: '/create'
-      fullPath: '/create'
-      preLoaderRoute: typeof CreateRouteRouteImport
+    '/_create-provider': {
+      id: '/_create-provider'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof CreateProviderRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,12 +94,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimulateSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_create-provider/create': {
+      id: '/_create-provider/create'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateProviderCreateRouteRouteImport
+      parentRoute: typeof CreateProviderRouteRoute
+    }
   }
 }
 
+interface CreateProviderRouteRouteChildren {
+  CreateProviderCreateRouteRoute: typeof CreateProviderCreateRouteRoute
+}
+
+const CreateProviderRouteRouteChildren: CreateProviderRouteRouteChildren = {
+  CreateProviderCreateRouteRoute: CreateProviderCreateRouteRoute,
+}
+
+const CreateProviderRouteRouteWithChildren =
+  CreateProviderRouteRoute._addFileChildren(CreateProviderRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CreateRouteRoute: CreateRouteRoute,
+  CreateProviderRouteRoute: CreateProviderRouteRouteWithChildren,
   SimulateSlugRoute: SimulateSlugRoute,
 }
 export const routeTree = rootRouteImport

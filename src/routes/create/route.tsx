@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Trash } from "lucide-react";
 import { Fragment } from "react";
 
+import { useAppContext } from "@/app-context.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
   Card,
@@ -21,10 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { useAutomataContext } from "@/contexts/automata-context.tsx";
-import { useCreateAutomaton } from "@/hooks/use-create-automaton.ts";
 import { builtins } from "@/lib/automata.ts";
 import { objectEntries, objectKeys, stringCapitalize } from "@/lib/extensions";
+
+import { useCreateAutomaton } from "./-use-create-automaton.ts";
 
 export const Route = createFileRoute("/create")({
   component: RouteComponent,
@@ -32,7 +33,7 @@ export const Route = createFileRoute("/create")({
 
 function RouteComponent() {
   const [state, setState] = useCreateAutomaton();
-  const [automata, setAutomata] = useAutomataContext();
+  const [automata, setAutomata] = useAppContext().automata;
 
   function saveAutomaton() {
     if (state.slug in automata) return;

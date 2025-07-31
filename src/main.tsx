@@ -4,6 +4,8 @@ import { StrictMode } from "react";
 import "./index.css";
 import { createRoot } from "react-dom/client";
 
+import { AppProvider } from "@/app-context.tsx";
+
 import { routeTree } from "./routeTree.gen.ts";
 
 const router = createRouter({ routeTree });
@@ -19,6 +21,8 @@ if (!root) throw new Error("Could not find root element");
 
 createRoot(root).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AppProvider>
+      <RouterProvider router={router} />
+    </AppProvider>
   </StrictMode>,
 );

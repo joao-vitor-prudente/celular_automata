@@ -9,11 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as CreateRouteImport } from './routes/create'
+import { Route as CreateRouteRouteImport } from './routes/create/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SimulateSlugRouteImport } from './routes/simulate.$slug'
+import { Route as SimulateSlugRouteImport } from './routes/simulate/$slug'
 
-const CreateRoute = CreateRouteImport.update({
+const CreateRouteRoute = CreateRouteRouteImport.update({
   id: '/create',
   path: '/create',
   getParentRoute: () => rootRouteImport,
@@ -31,18 +31,18 @@ const SimulateSlugRoute = SimulateSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/create': typeof CreateRoute
+  '/create': typeof CreateRouteRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/create': typeof CreateRoute
+  '/create': typeof CreateRouteRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/create': typeof CreateRoute
+  '/create': typeof CreateRouteRoute
   '/simulate/$slug': typeof SimulateSlugRoute
 }
 export interface FileRouteTypes {
@@ -55,7 +55,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CreateRoute: typeof CreateRoute
+  CreateRouteRoute: typeof CreateRouteRoute
   SimulateSlugRoute: typeof SimulateSlugRoute
 }
 
@@ -65,7 +65,7 @@ declare module '@tanstack/react-router' {
       id: '/create'
       path: '/create'
       fullPath: '/create'
-      preLoaderRoute: typeof CreateRouteImport
+      preLoaderRoute: typeof CreateRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -87,7 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CreateRoute: CreateRoute,
+  CreateRouteRoute: CreateRouteRoute,
   SimulateSlugRoute: SimulateSlugRoute,
 }
 export const routeTree = rootRouteImport

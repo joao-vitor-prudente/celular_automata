@@ -3,8 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 
-import { Board } from "@/components/board";
-import { useBoard } from "@/components/board/use-board.ts";
+import { useAppContext } from "@/app-context.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useAppForm } from "@/components/ui/form.tsx";
 import {
@@ -12,9 +11,11 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { useAutomataContext } from "@/contexts/automata-context.tsx";
 import { type Automaton, builtins } from "@/lib/automata.ts";
 import { objectKeys, stringCapitalize } from "@/lib/extensions";
+
+import { Board } from "./-board";
+import { useBoard } from "./-use-board.ts";
 
 export const Route = createFileRoute("/simulate/$slug")({
   component: RouteComponent,
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/simulate/$slug")({
 
 function RouteComponent() {
   const { slug } = Route.useParams();
-  const [automata] = useAutomataContext();
+  const [automata] = useAppContext().automata;
   const automaton = (builtins[slug] ?? automata[slug]) as Automaton | undefined;
   if (!automaton) throw new Error("No automaton found for given slug.");
 

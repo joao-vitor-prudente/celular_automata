@@ -6,11 +6,8 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
+import { useAppContext } from "@/app-context.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import {
-  AutomataConsumer,
-  AutomataProvider,
-} from "@/contexts/automata-context.tsx";
 import { builtins } from "@/lib/automata.ts";
 import { objectEntries } from "@/lib/extensions";
 
@@ -20,9 +17,9 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const currentRoute = useLocation();
-
+  const [automata] = useAppContext().automata;
   return (
-    <AutomataProvider>
+    <>
       <main className="h-screen w-screen overflow-y-auto flex flex-col">
         <header className="w-full flex gap-6 items-center bg-card p-8 border-b">
           <Link to="/">
@@ -44,25 +41,19 @@ function RootComponent() {
                 </li>
               ))}
               <div className="w-[2px] bg-muted" />
-              <AutomataConsumer>
-                {([automata]) =>
-                  objectEntries(automata).map(([slug, automaton]) => (
-                    <li key={slug}>
-                      <Button
-                        aria-disabled={
-                          currentRoute.href === `/simulate/${slug}`
-                        }
-                        asChild
-                        variant="link"
-                      >
-                        <Link params={{ slug }} to="/simulate/$slug">
-                          {automaton.name}
-                        </Link>
-                      </Button>
-                    </li>
-                  ))
-                }
-              </AutomataConsumer>
+              {objectEntries(automata).map(([slug, automaton]) => (
+                <li key={slug}>
+                  <Button
+                    aria-disabled={currentRoute.href === `/simulate/${slug}`}
+                    asChild
+                    variant="link"
+                  >
+                    <Link params={{ slug }} to="/simulate/$slug">
+                      {automaton.name}
+                    </Link>
+                  </Button>
+                </li>
+              ))}
               <li className="ml-auto">
                 <Button
                   aria-disabled={currentRoute.href === "/create"}
@@ -78,6 +69,6 @@ function RootComponent() {
         <Outlet />
       </main>
       <TanStackRouterDevtools />
-    </AutomataProvider>
+    </>
   );
 }

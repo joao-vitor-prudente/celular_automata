@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { z } from "zod";
 
-import type { UseBoard } from "@/components/board/use-board.ts";
 import type { Automaton } from "@/lib/automata.ts";
 
 import { matrixIter, objectKeys } from "@/lib/extensions";
+
+import type { UseBoard } from "./-use-board.ts";
 
 interface BoardProps<TState extends string> {
   readonly automaton: Automaton<TState>;

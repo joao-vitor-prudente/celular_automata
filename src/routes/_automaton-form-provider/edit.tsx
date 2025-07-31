@@ -16,8 +16,8 @@ function RouteComponent() {
   const [state] = useAutomatonFormContext();
 
   function saveAutomaton() {
-    if (state.slug in builtins) return;
-    setAutomata((prev) => ({ ...prev, [state.slug]: state }));
+    if (builtins.find((a) => a.slug === state.slug)) return;
+    setAutomata((prev) => [...prev, state]);
   }
 
   return (

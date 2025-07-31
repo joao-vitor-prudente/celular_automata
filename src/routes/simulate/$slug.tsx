@@ -51,7 +51,7 @@ function RouteComponent() {
         <h3 className="text-2xl">{automaton.name}</h3>
         <nav>
           <ul className="flex">
-            <li hidden={slug in builtins}>
+            <li hidden={!!builtins.find((a) => a.slug === slug)}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button asChild className="size-5" variant="ghost">

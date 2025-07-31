@@ -1,50 +1,14 @@
 import { useState } from "react";
-import { z } from "zod";
 
 import type { Automaton } from "@/lib/automata.ts";
 
 import {
-  arrayEquals,
   arrayRemoveAt,
-  arraySum,
   arrayToRecord,
-  objectEntries,
+  objectDeepCopy,
   objectKeys,
   objectRemoveKey,
-  objectValues,
 } from "@/lib/extensions";
-
-const automatonSchema = z
-  .object({
-    baseState: z.string().min(1),
-    name: z.string().min(1),
-    slug: z.string().min(1),
-    states: z.record(
-      z.string().min(1),
-      z.object({
-        color: z.string().min(1),
-        transitions: z.array(
-          z.object({
-            if: z.record(z.string(), z.number()),
-            then: z.string().min(1),
-          }),
-        ),
-      }),
-    ),
-  })
-  .refine((value) => {
-    if (!(value.baseState in value.states)) return false;
-    const transitions = objectEntries(value.states).flatMap(([state, data]) =>
-      data.transitions.map((t) => ({ state, ...t })),
-    );
-
-    return transitions.every((t) => {
-      if (t.state === t.then) return false;
-      if (!arrayEquals(objectKeys(value.states), objectKeys(t.if)))
-        return false;
-      return arraySum(objectValues(t.if)) === 8;
-    });
-  });
 
 export function useCreateAutomaton() {
   const [state, setState] = useState<Automaton>({
@@ -55,42 +19,51 @@ export function useCreateAutomaton() {
   });
 
   function setName(name: string) {
-    setState((prev) => ({ ...prev, name }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.name = name;
+      return newState;
+    });
   }
 
   function setSlug(slug: string) {
-    setState((prev) => ({ ...prev, slug }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.slug = slug;
+      return newState;
+    });
   }
 
   function setBaseState(baseState: string) {
-    setState((prev) => ({ ...prev, baseState }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.baseState = baseState;
+      return newState;
+    });
   }
 
   function addState(stateName: string) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: { color: "", transitions: [] },
-      },
-    }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.states[stateName] = { color: "", transitions: [] };
+      return newState;
+    });
   }
 
   function setStateColor(stateName: string, color: string) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: { ...prev.states[stateName], color },
-      },
-    }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.states[stateName].color = color;
+      return newState;
+    });
   }
 
   function removeState(stateName: string) {
-    setState((prev) => ({
-      ...prev,
-      states: objectRemoveKey(prev.states, stateName),
-    }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.states = objectRemoveKey(newState.states, stateName);
+      return newState;
+    });
   }
 
   function setTransitionThen(
@@ -98,55 +71,35 @@ export function useCreateAutomaton() {
     transitionIndex: number,
     then: string,
   ) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: {
-          ...prev.states[stateName],
-          transitions: prev.states[stateName].transitions.map((t, i) =>
-            i !== transitionIndex ? t : { ...t, then },
-          ),
-        },
-      },
-    }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.states[stateName].transitions[transitionIndex].then = then;
+      return newState;
+    });
   }
 
   function addTransition(stateName: string) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: {
-          ...prev.states[stateName],
-          transitions: [
-            ...prev.states[stateName].transitions,
-            {
-              if: arrayToRecord(objectKeys(prev.states), 0),
-              then:
-                objectKeys(prev.states).find((state) => state !== stateName) ??
-                stateName,
-            },
-          ],
-        },
-      },
-    }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      const defaultIf = arrayToRecord(objectKeys(prev.states), 0);
+      const defaultThen = objectKeys(prev.states).find((s) => s !== stateName);
+      newState.states[stateName].transitions.push({
+        if: defaultIf,
+        then: defaultThen ?? stateName,
+      });
+      return newState;
+    });
   }
 
   function removeTransition(stateName: string, transitionIndex: number) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: {
-          ...prev.states[stateName],
-          transitions: arrayRemoveAt(
-            prev.states[stateName].transitions,
-            transitionIndex,
-          ),
-        },
-      },
-    }));
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.states[stateName].transitions = arrayRemoveAt(
+        newState.states[stateName].transitions,
+        transitionIndex,
+      );
+      return newState;
+    });
   }
 
   function setTransitionIf(
@@ -155,26 +108,12 @@ export function useCreateAutomaton() {
     stateIf: string,
     count: number,
   ) {
-    setState((prev) => ({
-      ...prev,
-      states: {
-        ...prev.states,
-        [stateName]: {
-          ...prev.states[stateName],
-          transitions: prev.states[stateName].transitions.map((t, i) =>
-            i !== transitionIndex
-              ? t
-              : { ...t, if: { ...t.if, [stateIf]: count } },
-          ),
-        },
-      },
-    }));
-  }
-
-  function validateAutomaton() {
-    console.log(state);
-    console.log(automatonSchema.safeParse(state).error);
-    return automatonSchema.safeParse(state).success;
+    setState((prev) => {
+      const newState = objectDeepCopy(prev);
+      newState.states[stateName].transitions[transitionIndex].if[stateIf] =
+        count;
+      return newState;
+    });
   }
 
   return [
@@ -190,7 +129,6 @@ export function useCreateAutomaton() {
       setStateColor,
       setTransitionIf,
       setTransitionThen,
-      validateAutomaton,
     },
   ] as const;
 }

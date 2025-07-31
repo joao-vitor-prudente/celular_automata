@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Trash } from "lucide-react";
+import { Fragment } from "react";
 
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -42,18 +43,23 @@ function RouteComponent() {
   return (
     <section className="m-8 grid grid-cols-2 gap-y-6 gap-x-4">
       <div className="space-y-2">
-        <Label>
+        <Label htmlFor="name-input">
           <span>Name</span>
           <Input
+            autoComplete="off"
+            id="name-input"
+            name="name"
             onChange={(e) => {
               setState.setName(e.target.value);
             }}
             value={state.name}
           />
         </Label>
-        <Label>
+        <Label htmlFor="slug-input">
           <span>Slug</span>
           <Input
+            id="slug-input"
+            name="slug"
             onChange={(e) => {
               setState.setSlug(e.target.value);
             }}
@@ -62,10 +68,10 @@ function RouteComponent() {
         </Label>
       </div>
       <div className="space-y-2">
-        <Label>
+        <Label htmlFor="base-state-select">
           <span className="whitespace-nowrap">Base State</span>
           <Select onValueChange={setState.setBaseState} value={state.baseState}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full" id="base-state-select">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -77,24 +83,26 @@ function RouteComponent() {
             </SelectContent>
           </Select>
         </Label>
-        <Label>
+        <Label htmlFor="add-state-multi-input">
           <span className="whitespace-nowrap">Add State</span>
           <MultiInput
+            id="add-state-multi-input"
             onAdd={setState.addState}
             value={objectKeys(state.states)}
           />
         </Label>
       </div>
       {objectEntries(state.states).map(([stateName, stateData]) => (
-        <>
+        <Fragment key={stateName}>
           <Card className="rounded-r-none">
             <CardHeader>
               <CardTitle>{stringCapitalize(stateName)} State</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Label>
+              <Label htmlFor={`${stateName}-color-input`}>
                 <span>Color</span>
                 <Input
+                  id={`${stateName}-color-input`}
                   onChange={(e) => {
                     setState.setStateColor(stateName, e.target.value);
                   }}
@@ -120,13 +128,16 @@ function RouteComponent() {
               <CardTitle>{stringCapitalize(stateName)} Transitions</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul>
+              <ul className="space-y-4">
                 {stateData.transitions.map((transition, index) => (
                   <li className="flex gap-2 items-end" key={index}>
                     <ul className="flex gap-2">
                       {objectKeys(state.states).map((state) => (
                         <li key={state}>
-                          <Label className="flex-col items-start">
+                          <Label
+                            className="flex-col items-start"
+                            htmlFor={`${stateName}-${index.toString()}-${state}-select`}
+                          >
                             <span>{stringCapitalize(state)}</span>
                             <Select
                               onValueChange={(value) => {
@@ -139,7 +150,9 @@ function RouteComponent() {
                               }}
                               value={transition.if[state].toString()}
                             >
-                              <SelectTrigger>
+                              <SelectTrigger
+                                id={`${stateName}-${index.toString()}-${state}-select`}
+                              >
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -157,7 +170,10 @@ function RouteComponent() {
                       ))}
                     </ul>
                     <div className="w-full" />
-                    <Label className="flex-col items-start">
+                    <Label
+                      className="flex-col items-start"
+                      htmlFor={`${stateName}-${index.toString()}-then-select`}
+                    >
                       <span>Then</span>
                       <Select
                         onValueChange={(value) => {
@@ -165,7 +181,9 @@ function RouteComponent() {
                         }}
                         value={transition.then}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger
+                          id={`${stateName}-${index.toString()}-then-select`}
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -204,14 +222,10 @@ function RouteComponent() {
               </CardAction>
             </CardFooter>
           </Card>
-        </>
+        </Fragment>
       ))}
       <div className="col-span-2 flex justify-center pt-6">
-        <Button
-          className="w-md"
-          disabled={!setState.validateAutomaton()}
-          onClick={saveAutomaton}
-        >
+        <Button className="w-md" onClick={saveAutomaton}>
           Create
         </Button>
       </div>

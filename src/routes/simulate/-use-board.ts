@@ -17,6 +17,7 @@ export interface UseBoard<TState extends string> {
   readonly clear: () => void;
   readonly set: (i: number, j: number, value: TState) => void;
   readonly state: ImmutableMatrix<TState>;
+  readonly stateNameToIndex: Record<string, number>;
 }
 
 export function useBoard<TState extends string>(
@@ -24,6 +25,14 @@ export function useBoard<TState extends string>(
   automaton: Automaton<TState>,
 ): UseBoard<TState> {
   const [state, setState] = useState(matrixFill(automaton.baseState, size));
+
+  const stateNameToIndex = automaton.states.reduce(
+    (acc, cur, i) => {
+      acc[cur.name] = i;
+      return acc;
+    },
+    {} as Record<TState, number>,
+  );
 
   function getSurroundingStateCounts(
     boardState: ImmutableMatrix<TState>,
@@ -46,7 +55,9 @@ export function useBoard<TState extends string>(
     cellState: TState,
     counts: Partial<Record<TState, number>>,
   ): TState {
-    const transition = automaton.states[cellState].transitions.find((rule) =>
+    const transition = automaton.states[
+      stateNameToIndex[cellState]
+    ].transitions.find((rule) =>
       objectEntries(rule.if).every(([s, c]) => (counts[s] ?? 0) === c),
     );
     return transition?.then ?? cellState;
@@ -75,5 +86,5 @@ export function useBoard<TState extends string>(
     });
   }
 
-  return { advance, clear, set, state };
+  return { advance, clear, set, state, stateNameToIndex };
 }

@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
 import { builtins } from "@/lib/automata.ts";
-import { objectKeys, stringCapitalize } from "@/lib/extensions";
+import { stringCapitalize } from "@/lib/extensions";
 
 import { Board } from "./-board";
 import { useBoard } from "./-use-board.ts";
@@ -100,9 +100,9 @@ function RouteComponent() {
                       <SelectValue placeholder="State" />
                     </field.SelectTrigger>
                     <SelectContent>
-                      {objectKeys(automaton.states).map((state) => (
-                        <SelectItem key={state} value={state}>
-                          {stringCapitalize(state)}
+                      {automaton.states.map((state) => (
+                        <SelectItem key={state.name} value={state.name}>
+                          {stringCapitalize(state.name)}
                         </SelectItem>
                       ))}
                     </SelectContent>

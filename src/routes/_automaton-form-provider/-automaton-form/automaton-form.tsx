@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { objectKeys, stringCapitalize } from "@/lib/extensions";
+import { stringCapitalize } from "@/lib/extensions";
 import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
 import { StateCard } from "@/routes/_automaton-form-provider/-automaton-form/state-card.tsx";
 import { TransitionsCard } from "@/routes/_automaton-form-provider/-automaton-form/transitions-card.tsx";
@@ -63,9 +63,9 @@ export function AutomatonForm(props: AutomatonFormProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {objectKeys(state.states).map((state) => (
-                <SelectItem key={state} value={state}>
-                  {stringCapitalize(state)}
+              {state.states.map((state) => (
+                <SelectItem key={state.name} value={state.name}>
+                  {stringCapitalize(state.name)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -76,14 +76,14 @@ export function AutomatonForm(props: AutomatonFormProps) {
           <MultiInput
             id={addStateId}
             onAdd={setState.addState}
-            value={objectKeys(state.states)}
+            value={state.states.map((state) => state.name)}
           />
         </Label>
       </div>
-      {objectKeys(state.states).map((stateName) => (
-        <Fragment key={stateName}>
-          <StateCard stateName={stateName} />
-          <TransitionsCard stateName={stateName} />
+      {state.states.map((state, index) => (
+        <Fragment key={state.name}>
+          <StateCard stateIndex={index} />
+          <TransitionsCard stateIndex={index} />
         </Fragment>
       ))}
     </section>

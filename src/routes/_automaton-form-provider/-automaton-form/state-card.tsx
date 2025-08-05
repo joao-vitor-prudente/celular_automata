@@ -16,7 +16,7 @@ import { stringCapitalize } from "@/lib/extensions";
 import { useAutomatonFormContext } from "./automaton-form-context.tsx";
 
 interface StateCardProps {
-  readonly stateName: string;
+  readonly stateIndex: number;
 }
 
 export function StateCard(props: StateCardProps) {
@@ -25,7 +25,9 @@ export function StateCard(props: StateCardProps) {
   return (
     <Card className="rounded-r-none">
       <CardHeader>
-        <CardTitle>{stringCapitalize(props.stateName)} State</CardTitle>
+        <CardTitle>
+          {stringCapitalize(state.states[props.stateIndex].name)} State
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Label htmlFor={colorId}>
@@ -33,9 +35,9 @@ export function StateCard(props: StateCardProps) {
           <Input
             id={colorId}
             onChange={(e) => {
-              setState.setStateColor(props.stateName, e.target.value);
+              setState.setStateColor(props.stateIndex, e.target.value);
             }}
-            value={state.states[props.stateName].color}
+            value={state.states[props.stateIndex].color}
           />
         </Label>
       </CardContent>
@@ -43,7 +45,7 @@ export function StateCard(props: StateCardProps) {
         <CardAction>
           <Button
             onClick={() => {
-              setState.removeState(props.stateName);
+              setState.removeState(props.stateIndex);
             }}
             variant="destructive"
           >

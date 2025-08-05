@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import type { Automaton } from "@/lib/automata.ts";
 
-import { matrixIter, objectKeys } from "@/lib/extensions";
+import { matrixIter } from "@/lib/extensions";
 
 import type { UseBoard } from "./-use-board.ts";
 
@@ -30,7 +30,7 @@ export function Board<TState extends string>(props: BoardProps<TState>) {
   }, [props.isRunning, props.fps]);
 
   function validateState(state: string): TState {
-    return z.enum(objectKeys(props.automaton.states)).parse(state);
+    return z.enum(props.automaton.states.map((s) => s.name)).parse(state);
   }
 
   return (
@@ -45,7 +45,9 @@ export function Board<TState extends string>(props: BoardProps<TState>) {
               props.board.set(i, j, validateState(props.stateBrush));
             }}
             style={{
-              background: props.automaton.states[cell].color,
+              background:
+                props.automaton.states[props.board.stateNameToIndex[cell]]
+                  .color,
             }}
           />
         ))

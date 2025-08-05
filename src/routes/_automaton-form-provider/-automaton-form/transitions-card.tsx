@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { objectKeys, stringCapitalize } from "@/lib/extensions";
+import { arrayRemoveAt, stringCapitalize } from "@/lib/extensions";
 
 import { useAutomatonFormContext } from "./automaton-form-context.tsx";
 
@@ -30,11 +30,11 @@ interface CountSelectProps extends TransitionFormProps {
 
 interface TransitionFormProps extends TransitionsCardProps {
   readonly index: number;
-  readonly transition: Automaton["states"][string]["transitions"][number];
+  readonly transition: Automaton["states"][number]["transitions"][number];
 }
 
 interface TransitionsCardProps {
-  readonly stateName: string;
+  readonly stateIndex: number;
 }
 
 export function TransitionsCard(props: TransitionsCardProps) {
@@ -42,16 +42,18 @@ export function TransitionsCard(props: TransitionsCardProps) {
   return (
     <Card className="rounded-l-none">
       <CardHeader>
-        <CardTitle>{stringCapitalize(props.stateName)} Transitions</CardTitle>
+        <CardTitle>
+          {stringCapitalize(state.states[props.stateIndex].name)} Transitions
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="space-y-4">
-          {state.states[props.stateName].transitions.map(
+          {state.states[props.stateIndex].transitions.map(
             (transition, index) => (
               <li key={index}>
                 <TransitionForm
                   index={index}
-                  stateName={props.stateName}
+                  stateIndex={props.stateIndex}
                   transition={transition}
                 />
               </li>
@@ -63,7 +65,7 @@ export function TransitionsCard(props: TransitionsCardProps) {
         <CardAction>
           <Button
             onClick={() => {
-              setState.addTransition(props.stateName);
+              setState.addTransition(props.stateIndex);
             }}
             variant="secondary"
           >
@@ -84,7 +86,7 @@ function CountSelect(props: CountSelectProps) {
       <Select
         onValueChange={(value) => {
           setState.setTransitionIf(
-            props.stateName,
+            props.stateIndex,
             props.index,
             props.state,
             Number.parseInt(value),
@@ -113,9 +115,9 @@ function TransitionForm(props: TransitionFormProps) {
   return (
     <div className="flex items-end gap-2">
       <ul className="flex gap-2">
-        {objectKeys(state.states).map((s) => (
-          <li key={s}>
-            <CountSelect {...props} state={s} />
+        {state.states.map((s) => (
+          <li key={s.name}>
+            <CountSelect {...props} state={s.name} />
           </li>
         ))}
       </ul>
@@ -124,7 +126,7 @@ function TransitionForm(props: TransitionFormProps) {
         <span>Then</span>
         <Select
           onValueChange={(value) => {
-            setState.setTransitionThen(props.stateName, props.index, value);
+            setState.setTransitionThen(props.stateIndex, props.index, value);
           }}
           value={props.transition.then}
         >
@@ -132,19 +134,17 @@ function TransitionForm(props: TransitionFormProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {objectKeys(state.states)
-              .filter((state) => state !== props.stateName)
-              .map((state) => (
-                <SelectItem key={state} value={state}>
-                  {stringCapitalize(state)}
-                </SelectItem>
-              ))}
+            {arrayRemoveAt(state.states, props.stateIndex).map((s) => (
+              <SelectItem key={s.name} value={s.name}>
+                {stringCapitalize(s.name)}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </Label>
       <Button
         onClick={() => {
-          setState.removeTransition(props.stateName, props.index);
+          setState.removeTransition(props.stateIndex, props.index);
         }}
         variant="destructive"
       >

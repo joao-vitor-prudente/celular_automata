@@ -5,7 +5,7 @@ import type { Automaton } from "@/lib/automata.ts";
 
 import { matrixIter } from "@/lib/extensions";
 
-import type { UseBoard } from "./-use-board.ts";
+import type { UseBoard } from "./use-board.ts";
 
 interface BoardProps<TState extends string> {
   readonly automaton: Automaton<TState>;

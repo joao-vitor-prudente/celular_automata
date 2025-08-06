@@ -20,8 +20,7 @@ import { useAppContext } from "@/contexts/app-context";
 import { builtins } from "@/lib/automata.ts";
 import { stringCapitalize } from "@/lib/extensions";
 
-import { Board } from "./-board";
-import { useBoard } from "./-use-board.ts";
+import { Board, useBoard } from "./-board";
 
 export const Route = createFileRoute("/simulate/$slug")({
   component: RouteComponent,

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button.tsx";
 import { useAppContext } from "@/contexts/app-context";
@@ -18,12 +18,15 @@ function RouteComponent() {
     <div className="flex flex-col items-center gap-12 p-8">
       <AutomatonForm lockSlug={true} />
       <Button
+        asChild
         className="w-md"
         onClick={() => {
           setAutomata.edit(state);
         }}
       >
-        Edit
+        <Link params={{ slug: state.slug }} to="/simulate/$slug">
+          Edit
+        </Link>
       </Button>
     </div>
   );

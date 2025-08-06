@@ -1,6 +1,6 @@
 import { useStore } from "@tanstack/react-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clipboard, Pencil } from "lucide-react";
+import { Clipboard, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -17,7 +17,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
 import { useAppContext } from "@/contexts/app-context";
-import { builtins } from "@/lib/automata.ts";
 import { stringCapitalize } from "@/lib/extensions";
 
 import { Board, useBoard } from "./-board";
@@ -28,7 +27,7 @@ export const Route = createFileRoute("/simulate/$slug")({
 
 function RouteComponent() {
   const { slug } = Route.useParams();
-  const [automata] = useAppContext().automata;
+  const [automata, setAutomata] = useAppContext().automata;
   const automaton = automata.get(slug);
   if (!automaton) throw new Error("No automaton found for given slug.");
 
@@ -48,7 +47,7 @@ function RouteComponent() {
         <h3 className="text-2xl">{automaton.name}</h3>
         <nav>
           <ul className="flex">
-            <li hidden={!!builtins.find((a) => a.slug === slug)}>
+            <li hidden={automata.isBuiltin(slug)}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button asChild className="size-5" variant="ghost">
@@ -70,6 +69,25 @@ function RouteComponent() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Copy Automaton</TooltipContent>
+              </Tooltip>
+            </li>
+            <li hidden={automata.isBuiltin(slug)}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    asChild
+                    className="size-5"
+                    onClick={() => {
+                      setAutomata.remove(slug);
+                    }}
+                    variant="ghost"
+                  >
+                    <Link to="/">
+                      <Trash />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Delete Automaton</TooltipContent>
               </Tooltip>
             </li>
           </ul>

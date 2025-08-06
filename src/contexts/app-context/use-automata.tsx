@@ -14,23 +14,31 @@ export function useAutomata() {
     );
   }
 
-  function create(state: Automaton) {
+  function isBuiltin(slug: string): boolean {
+    return !!builtins.find((a) => a.slug === slug);
+  }
+
+  function create(automaton: Automaton) {
     setAutomata((prev) => {
-      if (builtins.find((a) => a.slug === state.slug)) return prev;
-      if (prev.find((a) => a.slug === state.slug)) return prev;
-      return [...prev, state];
+      if (builtins.find((a) => a.slug === automaton.slug)) return prev;
+      if (prev.find((a) => a.slug === automaton.slug)) return prev;
+      return [...prev, automaton];
     });
   }
 
-  function edit(state: Automaton) {
+  function edit(automaton: Automaton) {
     setAutomata((prev) => {
-      if (builtins.find((a) => a.slug === state.slug)) return prev;
-      return prev.map((a) => (a.slug === state.slug ? state : a));
+      if (builtins.find((a) => a.slug === automaton.slug)) return prev;
+      return prev.map((a) => (a.slug === automaton.slug ? automaton : a));
     });
+  }
+
+  function remove(slug: string) {
+    setAutomata((prev) => prev.filter((a) => a.slug !== slug));
   }
 
   return [
-    { get, state: automata },
-    { create, edit },
+    { get, isBuiltin, state: automata },
+    { create, edit, remove },
   ] as const;
 }

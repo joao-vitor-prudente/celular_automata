@@ -4,7 +4,7 @@ import { StrictMode } from "react";
 import "./index.css";
 import { createRoot } from "react-dom/client";
 
-import { AppProvider } from "@/app-context.tsx";
+import { AppProvider } from "@/contexts/app-context";
 
 import { routeTree } from "./routeTree.gen.ts";
 

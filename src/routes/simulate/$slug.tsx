@@ -4,7 +4,6 @@ import { Clipboard, Pencil } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
-import { useAppContext } from "@/app-context.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useAppForm } from "@/components/ui/form.tsx";
 import {
@@ -17,6 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
+import { useAppContext } from "@/contexts/app-context";
 import { builtins } from "@/lib/automata.ts";
 import { stringCapitalize } from "@/lib/extensions";
 
@@ -30,9 +30,7 @@ export const Route = createFileRoute("/simulate/$slug")({
 function RouteComponent() {
   const { slug } = Route.useParams();
   const [automata] = useAppContext().automata;
-  const automaton =
-    builtins.find((a) => a.slug === slug) ??
-    automata.find((a) => a.slug === slug);
+  const automaton = automata.get(slug);
   if (!automaton) throw new Error("No automaton found for given slug.");
 
   const form = useAppForm({

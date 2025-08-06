@@ -6,8 +6,8 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { useAppContext } from "@/app-context.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { useAppContext } from "@/contexts/app-context";
 import { builtins } from "@/lib/automata.ts";
 
 export const Route = createRootRoute({
@@ -45,7 +45,7 @@ function RootComponent() {
                 </li>
               ))}
               <div className="w-[2px] bg-muted" />
-              {automata.map((automaton) => (
+              {automata.state.map((automaton) => (
                 <li key={automaton.slug}>
                   <Button
                     aria-disabled={

@@ -58,13 +58,18 @@ export function AutomatonForm(props: AutomatonFormProps) {
       <div className="space-y-2">
         <Label htmlFor={baseStateId}>
           <span className="whitespace-nowrap">Base State</span>
-          <Select onValueChange={setState.setBaseState} value={state.baseState}>
+          <Select
+            onValueChange={(value) => {
+              setState.setBaseState(Number.parseInt(value));
+            }}
+            value={state.baseState.toString()}
+          >
             <SelectTrigger className="w-full" id={baseStateId}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {state.states.map((state) => (
-                <SelectItem key={state.name} value={state.name}>
+              {state.states.map((state, index) => (
+                <SelectItem key={state.name} value={index.toString()}>
                   {stringCapitalize(state.name)}
                 </SelectItem>
               ))}

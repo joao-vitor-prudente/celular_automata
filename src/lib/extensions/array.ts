@@ -1,4 +1,4 @@
-export function arrayCount<T extends string>(
+export function arrayCount<T extends number | string>(
   arr: T[],
 ): Partial<Record<T, number>> {
   return arr.reduce<Partial<Record<T, number>>>((counts, item) => {
@@ -12,6 +12,10 @@ export function arrayEquals<T>(array1: T[], array2: T[]): boolean {
     array1.length === array2.length &&
     array1.every((item, index) => item === array2[index])
   );
+}
+
+export function arrayRange(start: number, end: number): number[] {
+  return Array.from({ length: end - start }, (_, i) => i + start);
 }
 
 export function arrayRemoveAt<T>(array: T[], index: number): T[] {

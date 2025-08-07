@@ -1,90 +1,65 @@
-import { useState } from "react";
+import { useRef } from "react";
 
-import type { Automaton } from "@/lib/automata.ts";
+import type { Automaton, AutomatonStateTransition } from "@/lib/automata.ts";
 
-import {
-  arrayCount,
-  type ImmutableMatrix,
-  intWrap,
-  matrixCopy,
-  matrixFill,
-  matrixIter,
-  objectEntries,
-} from "@/lib/extensions";
+import { Uint8Vector2 } from "@/routes/simulate/-board/uint8-vector2.ts";
 
-export interface UseBoard<TState extends string> {
-  readonly advance: () => void;
-  readonly clear: () => void;
-  readonly set: (i: number, j: number, value: TState) => void;
-  readonly state: ImmutableMatrix<TState>;
-  readonly stateNameToIndex: Record<string, number>;
+export interface BoardConfig {
+  readonly boardSize: number;
+  readonly wrap: boolean;
 }
 
-export function useBoard<TState extends string>(
-  size: number,
-  automaton: Automaton<TState>,
-): UseBoard<TState> {
-  const [state, setState] = useState(matrixFill(automaton.baseState, size));
+export type UseBoard = ReturnType<typeof useBoard>;
 
-  const stateNameToIndex = automaton.states.reduce(
-    (acc, cur, i) => {
-      acc[cur.name] = i;
-      return acc;
-    },
-    {} as Record<TState, number>,
+export function useBoard(automaton: Automaton, config: BoardConfig) {
+  const currentBoardRef = useRef(
+    new Uint8Vector2(config.boardSize).fill(automaton.baseState),
+  );
+  const nextBoardRef = useRef(
+    new Uint8Vector2(config.boardSize).fill(automaton.baseState),
   );
 
-  function getSurroundingStateCounts(
-    boardState: ImmutableMatrix<TState>,
-    i: number,
-    j: number,
-  ): Partial<Record<TState, number>> {
-    return arrayCount([
-      boardState[intWrap(i - 1, 0, size - 1)][intWrap(j - 1, 0, size - 1)],
-      boardState[intWrap(i - 1, 0, size - 1)][j],
-      boardState[intWrap(i - 1, 0, size - 1)][intWrap(j + 1, 0, size - 1)],
-      boardState[i][intWrap(j - 1, 0, size - 1)],
-      boardState[i][intWrap(j + 1, 0, size - 1)],
-      boardState[intWrap(i + 1, 0, size - 1)][intWrap(j - 1, 0, size - 1)],
-      boardState[intWrap(i + 1, 0, size - 1)][j],
-      boardState[intWrap(i + 1, 0, size - 1)][intWrap(j + 1, 0, size - 1)],
-    ]);
+  function shouldTransition(
+    transition: AutomatonStateTransition,
+    x: number,
+    y: number,
+  ) {
+    const neighborhood = config.wrap
+      ? currentBoardRef.current.getWrappingNeighborhood(x, y, 1)
+      : currentBoardRef.current.getNeighborhood(x, y, 1);
+    const counts = generatorCount(neighborhood);
+    return transition.if.every((c, s) => (counts[s] ?? 0) === c);
   }
 
-  function computeNextState(
-    cellState: TState,
-    counts: Partial<Record<TState, number>>,
-  ): TState {
-    const transition = automaton.states[
-      stateNameToIndex[cellState]
-    ].transitions.find((rule) =>
-      objectEntries(rule.if).every(([s, c]) => (counts[s] ?? 0) === c),
-    );
-    return transition?.then ?? cellState;
+  function advance() {
+    currentBoardRef.current.forEach((state, x, y) => {
+      const transitions = automaton.states[state].transitions;
+      const transition = transitions.find((t) => shouldTransition(t, x, y));
+      const newState = transition ? transition.then : state;
+      nextBoardRef.current.set(x, y, newState);
+    });
+
+    const tempBoard = currentBoardRef.current;
+    currentBoardRef.current = nextBoardRef.current;
+    nextBoardRef.current = tempBoard;
   }
 
-  function advance(): void {
-    setState((prev) => {
-      const curr = matrixCopy(prev);
-      matrixIter(prev).forEach(([cell, i, j]) => {
-        const counts = getSurroundingStateCounts(prev, i, j);
-        curr[i][j] = computeNextState(cell, counts);
-      });
-      return curr;
+  function clear() {
+    currentBoardRef.current.forEach((_, x, y) => {
+      currentBoardRef.current.set(x, y, automaton.baseState);
+      nextBoardRef.current.set(x, y, automaton.baseState);
     });
   }
 
-  function clear(): void {
-    setState(matrixFill(automaton.baseState, size));
-  }
+  return [
+    { config, ref: currentBoardRef },
+    { advance, clear },
+  ] as const;
+}
 
-  function set(i: number, j: number, value: TState): void {
-    setState((prev) => {
-      const curr = matrixCopy(prev);
-      curr[i][j] = value;
-      return curr;
-    });
-  }
-
-  return { advance, clear, set, state, stateNameToIndex };
+function generatorCount(arr: Generator<number>): Record<number, number> {
+  return arr.reduce<Record<number, number>>((counts, item) => {
+    counts[item] = (counts[item] || 0) + 1;
+    return counts;
+  }, {});
 }

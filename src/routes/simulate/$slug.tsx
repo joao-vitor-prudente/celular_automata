@@ -18,8 +18,10 @@ import {
 } from "@/components/ui/tooltip.tsx";
 import { useAppContext } from "@/contexts/app-context";
 import { stringCapitalize } from "@/lib/extensions";
+import { useBoardCanvas } from "@/routes/simulate/-board/use-board-canvas.ts";
+import { useBoard } from "@/routes/simulate/-board/use-board.ts";
 
-import { Board, useBoard } from "./-board";
+import { Board } from "./-board";
 
 export const Route = createFileRoute("/simulate/$slug")({
   component: RouteComponent,
@@ -32,13 +34,22 @@ function RouteComponent() {
   if (!automaton) throw new Error("No automaton found for given slug.");
 
   const form = useAppForm({
-    defaultValues: { fps: 5, stateBrush: automaton.baseState },
+    defaultValues: { fps: 5, stateBrush: automaton.baseState.toString() },
     validators: {
       onChange: z.object({ fps: z.number(), stateBrush: z.string() }),
     },
   });
-  const formValues = useStore(form.store, (state) => state.values);
-  const board = useBoard(32, automaton);
+  const fps = useStore(form.store, (state) => state.values.fps);
+  const brush = useStore(form.store, (state) =>
+    Number.parseInt(state.values.stateBrush),
+  );
+
+  const [board, setBoard] = useBoard(automaton, { boardSize: 32, wrap: true });
+  const [canvas, setCanvas] = useBoardCanvas(automaton, board, brush, {
+    borderSize: 1,
+    cellSize: 24,
+  });
+
   const [isRunning, setIsRunning] = useState(false);
 
   return (
@@ -96,9 +107,12 @@ function RouteComponent() {
       <Board
         automaton={automaton}
         board={board}
-        fps={formValues.fps}
+        canvas={canvas}
+        fps={fps}
         isRunning={isRunning}
-        stateBrush={formValues.stateBrush}
+        ref={canvas.ref}
+        setBoard={setBoard}
+        setCanvas={setCanvas}
       />
       <section className="flex max-w-sm flex-col gap-4">
         <header>
@@ -115,8 +129,8 @@ function RouteComponent() {
                       <SelectValue placeholder="State" />
                     </field.SelectTrigger>
                     <SelectContent>
-                      {automaton.states.map((state) => (
-                        <SelectItem key={state.name} value={state.name}>
+                      {automaton.states.map((state, index) => (
+                        <SelectItem key={state.name} value={index.toString()}>
                           {stringCapitalize(state.name)}
                         </SelectItem>
                       ))}
@@ -156,7 +170,10 @@ function RouteComponent() {
           <Button
             className="grow"
             disabled={isRunning}
-            onClick={board.advance}
+            onClick={() => {
+              setBoard.advance();
+              setCanvas.drawBoard();
+            }}
             variant="secondary"
           >
             Advance Automaton
@@ -164,7 +181,10 @@ function RouteComponent() {
           <Button
             className="grow"
             disabled={isRunning}
-            onClick={board.clear}
+            onClick={() => {
+              setBoard.clear();
+              setCanvas.drawBoard();
+            }}
             variant="destructive"
           >
             Clear Board

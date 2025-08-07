@@ -1,27 +1,37 @@
-import { useEffect } from "react";
-import { z } from "zod";
+import { type Ref, useEffect } from "react";
 
 import type { Automaton } from "@/lib/automata.ts";
+import type { UseBoardCanvas } from "@/routes/simulate/-board/use-board-canvas.ts";
+import type { UseBoard } from "@/routes/simulate/-board/use-board.ts";
 
-import { matrixIter } from "@/lib/extensions";
-
-import type { UseBoard } from "./use-board.ts";
-
-interface BoardProps<TState extends string> {
-  readonly automaton: Automaton<TState>;
-  readonly board: UseBoard<TState>;
+interface BoardProps {
+  readonly automaton: Automaton;
+  readonly board: UseBoard[0];
+  readonly canvas: UseBoardCanvas[0];
   readonly fps: number;
   readonly isRunning: boolean;
-  readonly stateBrush: TState;
+  readonly ref: Ref<HTMLCanvasElement>;
+  readonly setBoard: UseBoard[1];
+  readonly setCanvas: UseBoardCanvas[1];
 }
 
-export function Board<TState extends string>(props: BoardProps<TState>) {
+export function Board(props: BoardProps) {
+  useEffect(() => {
+    props.setCanvas.drawBoard();
+    return () => {
+      props.setCanvas.clearCanvas();
+    };
+  }, [props.board.ref.current]);
+
   useEffect(() => {
     if (!props.isRunning) return;
 
-    props.board.advance();
+    props.setBoard.advance();
+    props.setCanvas.drawBoard();
+
     const interval = setInterval(() => {
-      props.board.advance();
+      props.setBoard.advance();
+      props.setCanvas.drawBoard();
     }, 1000 / props.fps);
 
     return () => {
@@ -29,29 +39,15 @@ export function Board<TState extends string>(props: BoardProps<TState>) {
     };
   }, [props.isRunning, props.fps]);
 
-  function validateState(state: string): TState {
-    return z.enum(props.automaton.states.map((s) => s.name)).parse(state);
-  }
-
   return (
-    <section className="grid grid-cols-32">
-      {matrixIter(props.board.state)
-        .map(([cell, i, j]) => (
-          <button
-            className="size-6 border border-background"
-            disabled={props.isRunning}
-            key={`(${i.toString()}, ${j.toString()})`}
-            onClick={() => {
-              props.board.set(i, j, validateState(props.stateBrush));
-            }}
-            style={{
-              background:
-                props.automaton.states[props.board.stateNameToIndex[cell]]
-                  .color,
-            }}
-          />
-        ))
-        .toArray()}
-    </section>
+    <canvas
+      height={props.canvas.config.cellSize * props.board.config.boardSize}
+      onMouseDown={props.setCanvas.startDrawing}
+      onMouseLeave={props.setCanvas.stopDrawing}
+      onMouseMove={props.setCanvas.draw}
+      onMouseUp={props.setCanvas.stopDrawing}
+      ref={props.ref}
+      width={props.canvas.config.cellSize * props.board.config.boardSize}
+    />
   );
 }

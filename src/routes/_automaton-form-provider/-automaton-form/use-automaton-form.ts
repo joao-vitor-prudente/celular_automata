@@ -2,11 +2,11 @@ import { useState } from "react";
 
 import type { Automaton } from "@/lib/automata.ts";
 
-import { arrayRemoveAt, arrayToRecord, objectDeepCopy } from "@/lib/extensions";
+import { arrayRemoveAt, objectDeepCopy } from "@/lib/extensions";
 
 export function useAutomatonForm(initial?: Automaton) {
   const [state, setState] = useState<Automaton>(
-    initial ?? { baseState: "", name: "", slug: "", states: [] },
+    initial ?? { baseState: 0, name: "", slug: "", states: [] },
   );
 
   function setName(name: string) {
@@ -25,7 +25,7 @@ export function useAutomatonForm(initial?: Automaton) {
     });
   }
 
-  function setBaseState(baseState: string) {
+  function setBaseState(baseState: number) {
     setState((prev) => {
       const newState = objectDeepCopy(prev);
       newState.baseState = baseState;
@@ -61,7 +61,7 @@ export function useAutomatonForm(initial?: Automaton) {
   function setTransitionThen(
     stateIndex: number,
     transitionIndex: number,
-    then: string,
+    then: number,
   ) {
     setState((prev) => {
       const newState = objectDeepCopy(prev);
@@ -73,15 +73,9 @@ export function useAutomatonForm(initial?: Automaton) {
   function addTransition(stateIndex: number) {
     setState((prev) => {
       const newState = objectDeepCopy(prev);
-      const stateName = newState.states[stateIndex].name;
-      const defaultIf = arrayToRecord(
-        prev.states.map((s) => s.name),
-        0,
-      );
-      const defaultThen = prev.states.find((s) => s.name !== stateName);
       newState.states[stateIndex].transitions.push({
-        if: defaultIf,
-        then: defaultThen?.name ?? stateName,
+        if: Array.from({ length: prev.states.length }, () => 0),
+        then: stateIndex === 0 && prev.states.length > 0 ? 1 : 0,
       });
       return newState;
     });
@@ -101,7 +95,7 @@ export function useAutomatonForm(initial?: Automaton) {
   function setTransitionIf(
     stateIndex: number,
     transitionIndex: number,
-    stateIf: string,
+    stateIf: number,
     count: number,
   ) {
     setState((prev) => {

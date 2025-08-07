@@ -1,19 +1,23 @@
-export interface Automaton<TState extends string = string> {
-  baseState: TState;
+export interface Automaton {
+  baseState: number;
   name: string;
   slug: string;
-  states: {
-    color: string;
-    name: TState;
-    transitions: {
-      if: Record<TState, number>;
-      then: TState;
-    }[];
-  }[];
+  states: AutomatonState[];
+}
+
+export interface AutomatonState {
+  color: string;
+  name: string;
+  transitions: AutomatonStateTransition[];
+}
+
+export interface AutomatonStateTransition {
+  if: number[];
+  then: number;
 }
 
 const conwaysGameOfLife: Automaton = {
-  baseState: "dead",
+  baseState: 1,
   name: "Conway's Game of Life",
   slug: "conways_game_of_life",
   states: [
@@ -21,21 +25,21 @@ const conwaysGameOfLife: Automaton = {
       color: "oklch(0.985 0 0)",
       name: "alive",
       transitions: [
-        { if: { alive: 0, dead: 8 }, then: "dead" },
-        { if: { alive: 1, dead: 7 }, then: "dead" },
-        { if: { alive: 4, dead: 4 }, then: "dead" },
-        { if: { alive: 5, dead: 3 }, then: "dead" },
-        { if: { alive: 6, dead: 2 }, then: "dead" },
-        { if: { alive: 7, dead: 1 }, then: "dead" },
-        { if: { alive: 8, dead: 0 }, then: "dead" },
+        { if: [0, 8], then: 1 },
+        { if: [1, 7], then: 1 },
+        { if: [4, 4], then: 1 },
+        { if: [5, 3], then: 1 },
+        { if: [6, 2], then: 1 },
+        { if: [7, 1], then: 1 },
+        { if: [8, 0], then: 1 },
       ],
     },
     {
       color: "oklch(0.205 0 0)",
       name: "dead",
-      transitions: [{ if: { alive: 3, dead: 5 }, then: "alive" }],
+      transitions: [{ if: [3, 5], then: 0 }],
     },
   ],
-} satisfies Automaton<"alive" | "dead">;
+};
 
 export const builtins: Automaton[] = [conwaysGameOfLife];

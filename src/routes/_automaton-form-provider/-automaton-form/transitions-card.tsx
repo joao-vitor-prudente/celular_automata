@@ -20,12 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { arrayRemoveAt, stringCapitalize } from "@/lib/extensions";
+import { stringCapitalize } from "@/lib/extensions";
 
 import { useAutomatonFormContext } from "./automaton-form-context.tsx";
 
 interface CountSelectProps extends TransitionFormProps {
-  readonly state: string;
+  readonly currentStateIndex: number;
 }
 
 interface TransitionFormProps extends TransitionsCardProps {
@@ -78,21 +78,23 @@ export function TransitionsCard(props: TransitionsCardProps) {
 }
 
 function CountSelect(props: CountSelectProps) {
-  const [_, setState] = useAutomatonFormContext();
+  const [state, setState] = useAutomatonFormContext();
   const countId = useId();
   return (
     <Label className="flex-col items-start" htmlFor={countId}>
-      <span>{stringCapitalize(props.state)}</span>
+      <span>
+        {stringCapitalize(state.states[props.currentStateIndex].name)}
+      </span>
       <Select
         onValueChange={(value) => {
           setState.setTransitionIf(
             props.stateIndex,
             props.index,
-            props.state,
+            props.currentStateIndex,
             Number.parseInt(value),
           );
         }}
-        value={props.transition.if[props.state].toString()}
+        value={props.transition.if[props.currentStateIndex].toString()}
       >
         <SelectTrigger id={countId}>
           <SelectValue />
@@ -115,9 +117,9 @@ function TransitionForm(props: TransitionFormProps) {
   return (
     <div className="flex items-end gap-2">
       <ul className="flex gap-2">
-        {state.states.map((s) => (
+        {state.states.map((s, index) => (
           <li key={s.name}>
-            <CountSelect {...props} state={s.name} />
+            <CountSelect {...props} currentStateIndex={index} />
           </li>
         ))}
       </ul>
@@ -126,16 +128,24 @@ function TransitionForm(props: TransitionFormProps) {
         <span>Then</span>
         <Select
           onValueChange={(value) => {
-            setState.setTransitionThen(props.stateIndex, props.index, value);
+            setState.setTransitionThen(
+              props.stateIndex,
+              props.index,
+              Number.parseInt(value),
+            );
           }}
-          value={props.transition.then}
+          value={props.transition.then.toString()}
         >
           <SelectTrigger id={thenId}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {arrayRemoveAt(state.states, props.stateIndex).map((s) => (
-              <SelectItem key={s.name} value={s.name}>
+            {state.states.map((s, index) => (
+              <SelectItem
+                disabled={index === props.stateIndex}
+                key={s.name}
+                value={index.toString()}
+              >
                 {stringCapitalize(s.name)}
               </SelectItem>
             ))}

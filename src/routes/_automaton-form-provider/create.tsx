@@ -3,8 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button.tsx";
 import { useAppContext } from "@/contexts/app-context";
 import { AutomatonForm } from "@/routes/_automaton-form-provider/-automaton-form";
-
-import { useAutomatonFormContext } from "./-automaton-form/automaton-form-context.tsx";
+import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form//automaton-form-context.tsx";
 
 export const Route = createFileRoute("/_automaton-form-provider/create")({
   component: RouteComponent,

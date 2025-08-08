@@ -2,8 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { z } from "zod";
 
 import { useAppContext } from "@/contexts/app-context";
-
-import { AutomatonFormProvider } from "./-automaton-form";
+import { AutomatonFormProvider } from "@/routes/_automaton-form-provider/-automaton-form";
 
 export const Route = createFileRoute("/_automaton-form-provider")({
   component: RouteComponent,

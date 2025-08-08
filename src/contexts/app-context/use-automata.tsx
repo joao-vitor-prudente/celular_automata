@@ -1,5 +1,5 @@
+import { useLocalStorageState } from "@/hooks/use-local-storage-state.ts";
 import { type Automaton, builtins } from "@/lib/automata.ts";
-import { useLocalStorageState } from "@/lib/extensions";
 
 export function useAutomata() {
   const [automata, setAutomata] = useLocalStorageState<Automaton[]>(

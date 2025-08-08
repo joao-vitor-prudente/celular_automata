@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { stringCapitalize } from "@/lib/extensions";
+import { stringCapitalize } from "@/lib/utils";
 import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
 import { StateCard } from "@/routes/_automaton-form-provider/-automaton-form/state-card.tsx";
 import { TransitionsCard } from "@/routes/_automaton-form-provider/-automaton-form/transitions-card.tsx";

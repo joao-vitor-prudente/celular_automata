@@ -1,5 +1,5 @@
 export {
   AutomatonFormProvider,
   useAutomatonFormContext,
-} from "./automaton-form-context.tsx";
-export { AutomatonForm } from "./automaton-form.tsx";
+} from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
+export { AutomatonForm } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form.tsx";

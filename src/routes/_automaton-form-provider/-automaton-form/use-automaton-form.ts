@@ -2,8 +2,6 @@ import { useState } from "react";
 
 import type { Automaton } from "@/lib/automata.ts";
 
-import { arrayRemoveAt, objectDeepCopy } from "@/lib/extensions";
-
 export function useAutomatonForm(initial?: Automaton) {
   const [state, setState] = useState<Automaton>(
     initial ?? { baseState: 0, name: "", slug: "", states: [] },
@@ -121,4 +119,12 @@ export function useAutomatonForm(initial?: Automaton) {
       setTransitionThen,
     },
   ] as const;
+}
+
+function arrayRemoveAt<T>(array: T[], index: number): T[] {
+  return [...array.slice(0, index), ...array.slice(index + 1)];
+}
+
+function objectDeepCopy<T extends object>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj)) as T;
 }

@@ -1,1 +1,1 @@
-export { Board } from "./board.tsx";
+export { Board } from "@/routes/simulate/-board/board.tsx";

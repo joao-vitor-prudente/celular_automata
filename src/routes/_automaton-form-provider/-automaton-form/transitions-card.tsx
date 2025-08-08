@@ -20,9 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { stringCapitalize } from "@/lib/extensions";
-
-import { useAutomatonFormContext } from "./automaton-form-context.tsx";
+import { stringCapitalize } from "@/lib/utils.ts";
+import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
 
 interface CountSelectProps extends TransitionFormProps {
   readonly currentStateIndex: number;

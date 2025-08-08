@@ -1,2 +1,2 @@
-export { AppProvider } from "./app-provider.tsx";
-export { useAppContext } from "./use-app-context.ts";
+export { AppProvider } from "@/contexts/app-context/app-provider.tsx";
+export { useAppContext } from "@/contexts/app-context/use-app-context.ts";

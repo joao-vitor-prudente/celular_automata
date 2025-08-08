@@ -11,9 +11,8 @@ import {
 } from "@/components/ui/card.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { stringCapitalize } from "@/lib/extensions";
-
-import { useAutomatonFormContext } from "./automaton-form-context.tsx";
+import { stringCapitalize } from "@/lib/utils";
+import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
 
 interface StateCardProps {
   readonly stateIndex: number;

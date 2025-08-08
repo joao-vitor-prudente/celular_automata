@@ -17,11 +17,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
 import { useAppContext } from "@/contexts/app-context";
-import { stringCapitalize } from "@/lib/extensions";
+import { stringCapitalize } from "@/lib/utils";
+import { Board } from "@/routes/simulate/-board";
 import { useBoardCanvas } from "@/routes/simulate/-board/use-board-canvas.ts";
 import { useBoard } from "@/routes/simulate/-board/use-board.ts";
-
-import { Board } from "./-board";
 
 export const Route = createFileRoute("/simulate/$slug")({
   component: RouteComponent,

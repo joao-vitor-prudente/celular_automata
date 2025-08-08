@@ -2,7 +2,7 @@ import { createContext, type ReactNode, useContext } from "react";
 
 import type { Automaton } from "@/lib/automata.ts";
 
-import { useAutomatonForm } from "./use-automaton-form.ts";
+import { useAutomatonForm } from "@/routes/_automaton-form-provider/-automaton-form/use-automaton-form.ts";
 
 const AutomatonFormContext = createContext<null | ReturnType<
   typeof useAutomatonForm

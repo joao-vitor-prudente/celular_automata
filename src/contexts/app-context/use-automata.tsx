@@ -1,10 +1,29 @@
-import { useLocalStorageState } from "@/hooks/use-local-storage-state.ts";
-import { type Automaton, builtins } from "@/lib/automata.ts";
+import {
+  JSONSerializer,
+  type Serializer,
+  useLocalStorageState,
+} from "@/hooks/use-local-storage-state.ts";
+import { Automaton } from "@/lib/automaton";
+import { builtins } from "@/lib/builtin-automata.ts";
+
+class AutomataSerializer
+  extends JSONSerializer<Automaton[]>
+  implements Serializer<Automaton[]>
+{
+  public deserialize(value: string): Automaton[] {
+    return super.deserialize(value).map((a) => Automaton.fromObject(a));
+  }
+
+  public serialize(value: Automaton[]): string {
+    return super.serialize(value);
+  }
+}
 
 export function useAutomata() {
   const [automata, setAutomata] = useLocalStorageState<Automaton[]>(
     [],
     "automata",
+    new AutomataSerializer(),
   );
 
   function get(slug: string): Automaton | undefined {

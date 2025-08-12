@@ -1,6 +1,6 @@
 import { type Ref, useEffect } from "react";
 
-import type { Automaton } from "@/lib/automata.ts";
+import type { Automaton } from "@/lib/automaton";
 import type { UseBoardCanvas } from "@/routes/simulate/-board/use-board-canvas.ts";
 import type { UseBoard } from "@/routes/simulate/-board/use-board.ts";
 

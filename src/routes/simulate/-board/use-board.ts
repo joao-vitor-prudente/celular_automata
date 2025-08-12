@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-import type { Automaton, AutomatonStateTransition } from "@/lib/automata.ts";
+import type { Automaton, Transition } from "@/lib/automaton";
 
 import { Uint8Vector2 } from "@/routes/simulate/-board/uint8-vector2.ts";
 
@@ -19,16 +19,15 @@ export function useBoard(automaton: Automaton, config: BoardConfig) {
     new Uint8Vector2(config.boardSize).fill(automaton.baseState),
   );
 
-  function shouldTransition(
-    transition: AutomatonStateTransition,
-    x: number,
-    y: number,
-  ) {
+  function shouldTransition(transition: Transition, x: number, y: number) {
     const neighborhood = config.wrap
       ? currentBoardRef.current.getWrappingNeighborhood(x, y, 1)
       : currentBoardRef.current.getNeighborhood(x, y, 1);
     const counts = generatorCount(neighborhood);
-    return transition.if.every((c, s) => (counts[s] ?? 0) === c);
+    return transition.match({
+      ExactNumberOfNeighborsTransition: (transition) =>
+        transition.if_.every((count, state) => (counts[state] ?? 0) === count),
+    });
   }
 
   function advance() {

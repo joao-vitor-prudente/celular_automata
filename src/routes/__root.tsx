@@ -8,7 +8,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { Button } from "@/components/ui/button.tsx";
 import { useAppContext } from "@/contexts/app-context";
-import { builtins } from "@/lib/automata.ts";
+import { builtins } from "@/lib/builtin-automata.ts";
 
 export const Route = createRootRoute({
   component: RootComponent,

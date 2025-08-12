@@ -1,12 +1,12 @@
-import { createContext, type ReactNode, useContext } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 
-import type { Automaton } from "@/lib/automata.ts";
+import type { GetterSetterPair } from "@/hooks/use-local-storage-state.ts";
 
-import { useAutomatonForm } from "@/routes/_automaton-form-provider/-automaton-form/use-automaton-form.ts";
+import { Automaton } from "@/lib/automaton";
 
-const AutomatonFormContext = createContext<null | ReturnType<
-  typeof useAutomatonForm
->>(null);
+const AutomatonFormContext = createContext<GetterSetterPair<Automaton> | null>(
+  null,
+);
 
 interface AutomatonFormProvider {
   readonly children: ReactNode;
@@ -14,7 +14,7 @@ interface AutomatonFormProvider {
 }
 
 export function AutomatonFormProvider(props: AutomatonFormProvider) {
-  const [state, setState] = useAutomatonForm(props.initial);
+  const [state, setState] = useState(props.initial ?? Automaton.blank());
 
   return (
     <AutomatonFormContext.Provider value={[state, setState]}>

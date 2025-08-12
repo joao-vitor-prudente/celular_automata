@@ -1,4 +1,4 @@
-import { Fragment, useId } from "react";
+import { type ChangeEvent, Fragment, useId } from "react";
 
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
+import { State } from "@/lib/automaton";
 import { stringCapitalize } from "@/lib/utils";
 import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
 import { StateCard } from "@/routes/_automaton-form-provider/-automaton-form/state-card.tsx";
@@ -26,6 +27,22 @@ export function AutomatonForm(props: AutomatonFormProps) {
   const baseStateId = useId();
   const addStateId = useId();
 
+  function setName(e: ChangeEvent<HTMLInputElement>) {
+    setState((prev) => prev.copyWith({ name: e.target.value }));
+  }
+
+  function setSlug(e: ChangeEvent<HTMLInputElement>) {
+    setState((prev) => prev.copyWith({ slug: e.target.value }));
+  }
+
+  function setBaseState(value: string) {
+    setState((prev) => prev.copyWith({ baseState: Number.parseInt(value) }));
+  }
+
+  function addState(value: string) {
+    setState((prev) => prev.addState(State.blank(value)));
+  }
+
   return (
     <section className="grid w-full grid-cols-2 gap-x-4 gap-y-6">
       <div className="space-y-2">
@@ -35,9 +52,7 @@ export function AutomatonForm(props: AutomatonFormProps) {
             autoComplete="off"
             id={nameId}
             name="name"
-            onChange={(e) => {
-              setState.setName(e.target.value);
-            }}
+            onChange={setName}
             value={state.name}
           />
         </Label>
@@ -47,9 +62,7 @@ export function AutomatonForm(props: AutomatonFormProps) {
             disabled={props.lockSlug}
             id={slugId}
             name="slug"
-            onChange={(e) => {
-              setState.setSlug(e.target.value);
-            }}
+            onChange={setSlug}
             readOnly={props.lockSlug}
             value={state.slug}
           />
@@ -59,9 +72,7 @@ export function AutomatonForm(props: AutomatonFormProps) {
         <Label htmlFor={baseStateId}>
           <span className="whitespace-nowrap">Base State</span>
           <Select
-            onValueChange={(value) => {
-              setState.setBaseState(Number.parseInt(value));
-            }}
+            onValueChange={setBaseState}
             value={state.baseState.toString()}
           >
             <SelectTrigger className="w-full" id={baseStateId}>
@@ -80,7 +91,7 @@ export function AutomatonForm(props: AutomatonFormProps) {
           <span className="whitespace-nowrap">Add State</span>
           <MultiInput
             id={addStateId}
-            onAdd={setState.addState}
+            onAdd={addState}
             value={state.states.map((state) => state.name)}
           />
         </Label>
@@ -88,7 +99,7 @@ export function AutomatonForm(props: AutomatonFormProps) {
       {state.states.map((state, index) => (
         <Fragment key={state.name}>
           <StateCard stateIndex={index} />
-          <TransitionsCard stateIndex={index} />
+          <TransitionsCard state={index} />
         </Fragment>
       ))}
     </section>

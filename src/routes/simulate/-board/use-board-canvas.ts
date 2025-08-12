@@ -1,6 +1,6 @@
 import { type MouseEvent, useRef } from "react";
 
-import type { Automaton } from "@/lib/automata.ts";
+import type { Automaton } from "@/lib/automaton";
 
 import { type UseBoard } from "@/routes/simulate/-board/use-board.ts";
 

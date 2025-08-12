@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { type ChangeEvent, useId } from "react";
 
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -21,6 +21,19 @@ interface StateCardProps {
 export function StateCard(props: StateCardProps) {
   const [state, setState] = useAutomatonFormContext();
   const colorId = useId();
+
+  function setColor(e: ChangeEvent<HTMLInputElement>) {
+    setState((prev) => {
+      const oldState = prev.states[props.stateIndex];
+      const newState = oldState.copyWith({ color: e.target.value });
+      return prev.setState(props.stateIndex, newState);
+    });
+  }
+
+  function removeState() {
+    setState((prev) => prev.removeState(props.stateIndex));
+  }
+
   return (
     <Card className="rounded-r-none">
       <CardHeader>
@@ -33,21 +46,14 @@ export function StateCard(props: StateCardProps) {
           <span>Color</span>
           <Input
             id={colorId}
-            onChange={(e) => {
-              setState.setStateColor(props.stateIndex, e.target.value);
-            }}
+            onChange={setColor}
             value={state.states[props.stateIndex].color}
           />
         </Label>
       </CardContent>
       <CardFooter>
         <CardAction>
-          <Button
-            onClick={() => {
-              setState.removeState(props.stateIndex);
-            }}
-            variant="destructive"
-          >
+          <Button onClick={removeState} variant="destructive">
             Delete State
           </Button>
         </CardAction>

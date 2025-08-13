@@ -1,4 +1,4 @@
-import { Transition } from "@/lib/automaton/transition.ts";
+import { Transition, TransitionFactory } from "@/lib/automaton/transitions";
 import { arrayRemoveAt, arraySetAt } from "@/lib/automaton/utils.ts";
 
 export class State {
@@ -25,7 +25,7 @@ export class State {
       color: obj.color,
       name: obj.name,
       transitions: obj.transitions.map((transition) =>
-        Transition.fromObject(transition),
+        TransitionFactory.fromObject(transition),
       ),
     });
   }
@@ -33,7 +33,10 @@ export class State {
   public addStateToTransitions(): State {
     return this.copyWith({
       transitions: this.transitions.map((t) =>
-        t.match({ ExactNumberOfNeighborsTransition: (t) => t.addState() }),
+        t.match<Transition>({
+          ExactNumberOfNeighborsTransition: (t) => t.addState(),
+          PositionalNeighborTransition: (t) => t,
+        }),
       ),
     });
   }
@@ -58,8 +61,9 @@ export class State {
   public removeStateFromTransitions(index: number): State {
     return this.copyWith({
       transitions: this.transitions.map((t) =>
-        t.match({
+        t.match<Transition>({
           ExactNumberOfNeighborsTransition: (t) => t.removeState(index),
+          PositionalNeighborTransition: (t) => t,
         }),
       ),
     });

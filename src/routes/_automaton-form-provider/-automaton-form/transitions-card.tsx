@@ -1,3 +1,5 @@
+import { Info } from "lucide-react";
+
 import { Button } from "@/components/ui/button.tsx";
 import {
   Card,
@@ -7,10 +9,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card.tsx";
-import { ExactNumberOfNeighborsTransition } from "@/lib/automaton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu.tsx";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
+import { TransitionFactory } from "@/lib/automaton/transitions";
+import { TransitionType } from "@/lib/automaton/transitions/transition.ts";
 import { stringCapitalize } from "@/lib/utils.ts";
 import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
 import { ExactNumberOfNeighborsTransitionForm } from "@/routes/_automaton-form-provider/-automaton-form/transition-form/exact-number-of-neighbors-transition-form.tsx";
+import { PositionalNeighborTransitionForm } from "@/routes/_automaton-form-provider/-automaton-form/transition-form/positional-neighbor-transition-form.tsx";
 
 interface TransitionsCardProps {
   readonly state: number;
@@ -19,16 +36,24 @@ interface TransitionsCardProps {
 export function TransitionsCard(props: TransitionsCardProps) {
   const [state, setState] = useAutomatonFormContext();
 
-  function addTransition() {
+  function addTransition(type: TransitionType) {
     setState((prev) => {
       const oldState = prev.states[props.state];
-      const newTransition = ExactNumberOfNeighborsTransition.blank(
-        prev.states.length,
-        props.state,
-      );
+      const newTransition = new TransitionFactory().blank(type, {
+        originState: props.state,
+        stateCount: prev.states.length,
+      });
       const newState = oldState.addTransition(newTransition);
       return prev.setState(props.state, newState);
     });
+  }
+
+  function addExactNumberOfNeighborsTransition() {
+    addTransition(TransitionType.exactNumberOfNeighbors);
+  }
+
+  function addPositionalNeighborTransition() {
+    addTransition(TransitionType.positionalNeighbor);
   }
 
   return (
@@ -51,15 +76,58 @@ export function TransitionsCard(props: TransitionsCardProps) {
                   />
                 </li>
               ),
+              PositionalNeighborTransition: (transition) => (
+                <PositionalNeighborTransitionForm
+                  state={props.state}
+                  transition={transition}
+                  transitionIndex={index}
+                />
+              ),
             }),
           )}
         </ul>
       </CardContent>
       <CardFooter>
         <CardAction>
-          <Button onClick={addTransition} variant="secondary">
-            Add Transition
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Add Transition</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Transition Types</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="justify-between"
+                onClick={addExactNumberOfNeighborsTransition}
+              >
+                <span>Exact number of neighbors</span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info />
+                    <TooltipContent>
+                      Transition based on number of cells in each state cell
+                      surrounding the current cell
+                    </TooltipContent>
+                  </TooltipTrigger>
+                </Tooltip>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="justify-between"
+                onClick={addPositionalNeighborTransition}
+              >
+                <span>Positional neighbor</span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info />
+                    <TooltipContent>
+                      Transition based on the state of the cell in a given
+                      position relative to the current cell
+                    </TooltipContent>
+                  </TooltipTrigger>
+                </Tooltip>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </CardAction>
       </CardFooter>
     </Card>

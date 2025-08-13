@@ -1,7 +1,8 @@
 import { useRef } from "react";
 
-import type { Automaton, Transition } from "@/lib/automaton";
+import type { Automaton } from "@/lib/automaton";
 
+import { Transition } from "@/lib/automaton/transitions";
 import { Uint8Vector2 } from "@/routes/simulate/-board/uint8-vector2.ts";
 
 export interface BoardConfig {
@@ -27,6 +28,21 @@ export function useBoard(automaton: Automaton, config: BoardConfig) {
     return transition.match({
       ExactNumberOfNeighborsTransition: (transition) =>
         transition.if_.every((count, state) => (counts[state] ?? 0) === count),
+      PositionalNeighborTransition: (transition) =>
+        transition.matchPosition({
+          bottom: () => currentBoardRef.current.cellOnBottom(x, y, config.wrap),
+          "bottom-left": () =>
+            currentBoardRef.current.cellOnBottomLeft(x, y, config.wrap),
+          "bottom-right": () =>
+            currentBoardRef.current.cellOnBottomRight(x, y, config.wrap),
+          left: () => currentBoardRef.current.cellOnLeft(x, y, config.wrap),
+          right: () => currentBoardRef.current.cellOnRight(x, y, config.wrap),
+          top: () => currentBoardRef.current.cellOnTop(x, y, config.wrap),
+          "top-left": () =>
+            currentBoardRef.current.cellOnTopLeft(x, y, config.wrap),
+          "top-right": () =>
+            currentBoardRef.current.cellOnTopRight(x, y, config.wrap),
+        }) === transition.if_.state,
     });
   }
 

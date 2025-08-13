@@ -5,6 +5,62 @@ export class Uint8Vector2 {
     this.array = new Uint8Array(Math.pow(size, 2));
   }
 
+  public cellOnBottom(x: number, y: number, wrap: boolean): null | number {
+    if (!wrap) return this.isOutOfBounds(x, y + 1) ? null : this.get(x, y + 1);
+    return this.get(x, intWrap(y + 1, 0, this.size - 1));
+  }
+
+  public cellOnBottomLeft(x: number, y: number, wrap: boolean): null | number {
+    if (!wrap)
+      return this.isOutOfBounds(x - 1, y + 1) ? null : this.get(x - 1, y + 1);
+    return this.get(
+      intWrap(x - 1, 0, this.size - 1),
+      intWrap(y + 1, 0, this.size - 1),
+    );
+  }
+
+  public cellOnBottomRight(x: number, y: number, wrap: boolean): null | number {
+    if (!wrap)
+      return this.isOutOfBounds(x + 1, y + 1) ? null : this.get(x + 1, y + 1);
+    return this.get(
+      intWrap(x + 1, 0, this.size - 1),
+      intWrap(y + 1, 0, this.size - 1),
+    );
+  }
+
+  public cellOnLeft(x: number, y: number, wrap: boolean): null | number {
+    if (!wrap) return this.isOutOfBounds(x - 1, y) ? null : this.get(x - 1, y);
+    return this.get(intWrap(x - 1, 0, this.size - 1), y);
+  }
+
+  public cellOnRight(x: number, y: number, wrap: boolean): null | number {
+    if (!wrap) return this.isOutOfBounds(x + 1, y) ? null : this.get(x + 1, y);
+    return this.get(intWrap(x + 1, 0, this.size - 1), y);
+  }
+
+  public cellOnTop(x: number, y: number, wrap: boolean): null | number {
+    if (!wrap) return this.isOutOfBounds(x, y - 1) ? null : this.get(x, y - 1);
+    return this.get(x, intWrap(y - 1, 0, this.size - 1));
+  }
+
+  public cellOnTopLeft(x: number, y: number, wrap: boolean): null | number {
+    if (!wrap)
+      return this.isOutOfBounds(x - 1, y - 1) ? null : this.get(x - 1, y - 1);
+    return this.get(
+      intWrap(x - 1, 0, this.size - 1),
+      intWrap(y - 1, 0, this.size - 1),
+    );
+  }
+
+  public cellOnTopRight(x: number, y: number, wrap: boolean): null | number {
+    if (!wrap)
+      return this.isOutOfBounds(x + 1, y - 1) ? null : this.get(x + 1, y - 1);
+    return this.get(
+      intWrap(x + 1, 0, this.size - 1),
+      intWrap(y - 1, 0, this.size - 1),
+    );
+  }
+
   public fill(value: number): this {
     this.array.fill(value);
     return this;
@@ -50,6 +106,10 @@ export class Uint8Vector2 {
         yield this.get(curX, curY);
       }
     }
+  }
+
+  public isOutOfBounds(x: number, y: number): boolean {
+    return x < 0 || y < 0 || x >= this.size || y >= this.size;
   }
 
   public map(

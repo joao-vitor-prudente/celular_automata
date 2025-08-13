@@ -1,8 +1,5 @@
-import {
-  Automaton,
-  ExactNumberOfNeighborsTransition,
-  State,
-} from "@/lib/automaton";
+import { Automaton, State } from "@/lib/automaton";
+import { ExactNumberOfNeighborsTransition } from "@/lib/automaton/transitions";
 
 const conwaysGameOfLife = new Automaton({
   baseState: 1,

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { ExactNumberOfNeighborsTransition } from "@/lib/automaton";
+import { ExactNumberOfNeighborsTransition } from "@/lib/automaton/transitions";
 import { stringCapitalize } from "@/lib/utils.ts";
 import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
 

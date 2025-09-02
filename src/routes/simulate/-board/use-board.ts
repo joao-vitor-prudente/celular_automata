@@ -3,7 +3,7 @@ import { useRef } from "react";
 import type { Automaton } from "@/lib/automaton";
 
 import { Transition } from "@/lib/automaton/transitions";
-import { Uint8Vector2 } from "@/routes/simulate/-board/uint8-vector2.ts";
+import { Cursor, Matrix, Neighborhood } from "@/lib/matrix";
 
 export interface BoardConfig {
   readonly boardSize: number;
@@ -14,34 +14,30 @@ export type UseBoard = ReturnType<typeof useBoard>;
 
 export function useBoard(automaton: Automaton, config: BoardConfig) {
   const currentBoardRef = useRef(
-    new Uint8Vector2(config.boardSize).fill(automaton.baseState),
+    new Matrix(config.boardSize).fill(automaton.baseState),
   );
   const nextBoardRef = useRef(
-    new Uint8Vector2(config.boardSize).fill(automaton.baseState),
+    new Matrix(config.boardSize).fill(automaton.baseState),
   );
 
   function shouldTransition(transition: Transition, x: number, y: number) {
-    const neighborhood = config.wrap
-      ? currentBoardRef.current.getWrappingNeighborhood(x, y, 1)
-      : currentBoardRef.current.getNeighborhood(x, y, 1);
-    const counts = generatorCount(neighborhood);
+    const matrix = currentBoardRef.current;
+    const cursor = Cursor.create({ matrix, x, y }, config.wrap);
+    const neighborhood = new Neighborhood(cursor, 1);
+    const counts = generatorCount(neighborhood.get());
     return transition.match({
       ExactNumberOfNeighborsTransition: (transition) =>
         transition.if_.every((count, state) => (counts[state] ?? 0) === count),
       PositionalNeighborTransition: (transition) =>
         transition.matchPosition({
-          bottom: () => currentBoardRef.current.cellOnBottom(x, y, config.wrap),
-          "bottom-left": () =>
-            currentBoardRef.current.cellOnBottomLeft(x, y, config.wrap),
-          "bottom-right": () =>
-            currentBoardRef.current.cellOnBottomRight(x, y, config.wrap),
-          left: () => currentBoardRef.current.cellOnLeft(x, y, config.wrap),
-          right: () => currentBoardRef.current.cellOnRight(x, y, config.wrap),
-          top: () => currentBoardRef.current.cellOnTop(x, y, config.wrap),
-          "top-left": () =>
-            currentBoardRef.current.cellOnTopLeft(x, y, config.wrap),
-          "top-right": () =>
-            currentBoardRef.current.cellOnTopRight(x, y, config.wrap),
+          bottom: () => cursor.down().get(),
+          "bottom-left": () => cursor.down().left().get(),
+          "bottom-right": () => cursor.down().right().get(),
+          left: () => cursor.left().get(),
+          right: () => cursor.right().get(),
+          top: () => cursor.up().get(),
+          "top-left": () => cursor.up().left().get(),
+          "top-right": () => cursor.up().right().get(),
         }) === transition.if_.state,
     });
   }

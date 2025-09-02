@@ -42,6 +42,11 @@ export function useBoard(automaton: Automaton, config: BoardConfig) {
     });
   }
 
+  function changeSize(size: number) {
+    currentBoardRef.current = new Matrix(size).fill(automaton.baseState);
+    nextBoardRef.current = new Matrix(size).fill(automaton.baseState);
+  }
+
   function advance() {
     currentBoardRef.current.forEach((state, x, y) => {
       const transitions = automaton.states[state].transitions;
@@ -64,7 +69,7 @@ export function useBoard(automaton: Automaton, config: BoardConfig) {
 
   return [
     { config, ref: currentBoardRef },
-    { advance, clear },
+    { advance, changeSize, clear },
   ] as const;
 }
 

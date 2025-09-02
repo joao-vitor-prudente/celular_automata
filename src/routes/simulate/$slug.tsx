@@ -26,6 +26,14 @@ export const Route = createFileRoute("/simulate/$slug")({
   component: RouteComponent,
 });
 
+const BOARD_DEFAULTS = {
+  boardSize: 32,
+  boardWrap: true,
+  borderSize: 1,
+  cellSize: 24,
+  fps: 5,
+};
+
 function RouteComponent() {
   const { slug } = Route.useParams();
   const [automata, setAutomata] = useAppContext().automata;
@@ -33,20 +41,39 @@ function RouteComponent() {
   if (!automaton) throw new Error("No automaton found for given slug.");
 
   const form = useAppForm({
-    defaultValues: { fps: 5, stateBrush: automaton.baseState.toString() },
+    defaultValues: {
+      boardSize: BOARD_DEFAULTS.boardSize,
+      fps: BOARD_DEFAULTS.fps,
+      stateBrush: automaton.baseState.toString(),
+      wrap: BOARD_DEFAULTS.boardWrap,
+    },
     validators: {
-      onChange: z.object({ fps: z.number(), stateBrush: z.string() }),
+      onChange: z.object({
+        boardSize: z.number(),
+        fps: z.number(),
+        stateBrush: z.string(),
+        wrap: z.boolean(),
+      }),
     },
   });
-  const fps = useStore(form.store, (state) => state.values.fps);
-  const brush = useStore(form.store, (state) =>
-    Number.parseInt(state.values.stateBrush),
+
+  const formValues = useStore(form.store, (state) => ({
+    ...state.values,
+    stateBrush: Number.parseInt(state.values.stateBrush),
+  }));
+
+  const [board, setBoard] = useBoard(automaton, formValues);
+
+  const [canvas, setCanvas] = useBoardCanvas(
+    automaton,
+    board,
+    formValues.stateBrush,
+    BOARD_DEFAULTS,
   );
 
-  const [board, setBoard] = useBoard(automaton, { boardSize: 32, wrap: true });
-  const [canvas, setCanvas] = useBoardCanvas(automaton, board, brush, {
-    borderSize: 1,
-    cellSize: 24,
+  useStore(form.store, (state) => {
+    if (state.values.boardSize === board.ref.current.size) return;
+    setBoard.changeSize(formValues.boardSize);
   });
 
   const [isRunning, setIsRunning] = useState(false);
@@ -103,16 +130,18 @@ function RouteComponent() {
           </ul>
         </nav>
       </header>
-      <Board
-        automaton={automaton}
-        board={board}
-        canvas={canvas}
-        fps={fps}
-        isRunning={isRunning}
-        ref={canvas.ref}
-        setBoard={setBoard}
-        setCanvas={setCanvas}
-      />
+      <div className="scrollbar-thin max-h-[calc(100vh-14rem)] overflow-auto">
+        <Board
+          automaton={automaton}
+          board={board}
+          canvas={canvas}
+          fps={formValues.fps}
+          isRunning={isRunning}
+          ref={canvas.ref}
+          setBoard={setBoard}
+          setCanvas={setCanvas}
+        />
+      </div>
       <section className="flex max-w-sm flex-col gap-4">
         <header>
           <h4 className="text-lg">Simulation Configuration</h4>
@@ -152,6 +181,36 @@ function RouteComponent() {
                 </field.FormControl>
                 <field.FormDescription>
                   Number of steps computed each second
+                </field.FormDescription>
+                <field.FormMessage />
+              </field.FormItem>
+            )}
+          </form.AppField>
+          <form.AppField name="boardSize">
+            {(field) => (
+              <field.FormItem>
+                <field.FormLabel>Board Size</field.FormLabel>
+                <field.FormControl>
+                  <field.Input type="number" />
+                </field.FormControl>
+                <field.FormDescription>
+                  Size of the board in cells
+                </field.FormDescription>
+                <field.FormMessage />
+              </field.FormItem>
+            )}
+          </form.AppField>
+          <form.AppField name="wrap">
+            {(field) => (
+              <field.FormItem>
+                <field.FormLabel>
+                  <field.FormControl>
+                    <field.Switch />
+                  </field.FormControl>
+                  <span>Should wrap</span>
+                </field.FormLabel>
+                <field.FormDescription>
+                  Whether or not to wrap board edges
                 </field.FormDescription>
                 <field.FormMessage />
               </field.FormItem>

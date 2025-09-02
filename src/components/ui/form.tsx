@@ -17,6 +17,7 @@ import {
   Select as _Select,
   SelectTrigger as _SelectTrigger,
 } from "@/components/ui/select.tsx";
+import { Switch as _Switch } from "@/components/ui/switch.tsx";
 import { cn } from "@/lib/utils";
 
 const { fieldContext, formContext, useFieldContext, useFormContext } =
@@ -34,6 +35,7 @@ const { useAppForm, withForm } = createFormHook({
     MultiInputTags,
     Select,
     SelectTrigger,
+    Switch,
   },
   fieldContext,
   formComponents: {},
@@ -203,6 +205,20 @@ function SelectTrigger(props: React.ComponentProps<typeof _SelectTrigger>) {
   const { field, formItemId } = useFormContexts();
   return (
     <_SelectTrigger {...props} id={formItemId} onBlur={field.handleBlur} />
+  );
+}
+
+function Switch(props: React.ComponentProps<typeof _Switch>) {
+  const { field, formItemId } = useFormContexts();
+  return (
+    <_Switch
+      {...props}
+      checked={field.state.value as boolean}
+      id={formItemId}
+      name={field.name}
+      onBlur={field.handleBlur}
+      onCheckedChange={field.handleChange}
+    />
   );
 }
 

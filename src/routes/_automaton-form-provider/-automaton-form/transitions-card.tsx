@@ -26,8 +26,11 @@ import { TransitionFactory } from "@/lib/automaton/transitions";
 import { TransitionType } from "@/lib/automaton/transitions/transition.ts";
 import { stringCapitalize } from "@/lib/utils.ts";
 import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
-import { ExactNumberOfNeighborsTransitionForm } from "@/routes/_automaton-form-provider/-automaton-form/transition-form/exact-number-of-neighbors-transition-form.tsx";
-import { PositionalNeighborTransitionForm } from "@/routes/_automaton-form-provider/-automaton-form/transition-form/positional-neighbor-transition-form.tsx";
+import {
+  BaseTransitionForm,
+  ExactNumberOfNeighborsTransitionForm,
+  PositionalNeighborTransitionForm,
+} from "@/routes/_automaton-form-provider/-automaton-form/transition-form";
 
 interface TransitionsCardProps {
   readonly state: number;
@@ -56,6 +59,10 @@ export function TransitionsCard(props: TransitionsCardProps) {
     addTransition(TransitionType.positionalNeighbor);
   }
 
+  function addAlwaysTransition() {
+    addTransition(TransitionType.always);
+  }
+
   return (
     <Card className="rounded-l-none">
       <CardHeader>
@@ -67,6 +74,15 @@ export function TransitionsCard(props: TransitionsCardProps) {
         <ul className="space-y-4">
           {state.states[props.state].transitions.map((transition, index) =>
             transition.match({
+              AlwaysTransition: () => (
+                <li key={index}>
+                  <BaseTransitionForm
+                    state={props.state}
+                    transition={transition}
+                    transitionIndex={index}
+                  />
+                </li>
+              ),
               ExactNumberOfNeighborsTransition: (transition) => (
                 <li key={index}>
                   <ExactNumberOfNeighborsTransitionForm
@@ -122,6 +138,20 @@ export function TransitionsCard(props: TransitionsCardProps) {
                     <TooltipContent>
                       Transition based on the state of the cell in a given
                       position relative to the current cell
+                    </TooltipContent>
+                  </TooltipTrigger>
+                </Tooltip>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="justify-between"
+                onClick={addAlwaysTransition}
+              >
+                <span>Always</span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info />
+                    <TooltipContent>
+                      Transition the current cell always to the given state
                     </TooltipContent>
                   </TooltipTrigger>
                 </Tooltip>

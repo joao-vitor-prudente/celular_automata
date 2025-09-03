@@ -26,6 +26,7 @@ export function useBoard(automaton: Automaton, config: BoardConfig) {
     const neighborhood = new Neighborhood(cursor, 1);
     const counts = generatorCount(neighborhood.get());
     return transition.match({
+      AlwaysTransition: () => true,
       ExactNumberOfNeighborsTransition: (transition) =>
         transition.if_.every((count, state) => (counts[state] ?? 0) === count),
       PositionalNeighborTransition: (transition) =>

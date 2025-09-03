@@ -1,12 +1,15 @@
+import type { AlwaysTransition } from "@/lib/automaton/transitions/always-transition.ts";
 import type { ExactNumberOfNeighborsTransition } from "@/lib/automaton/transitions/exact-number-of-neighbors-transition.ts";
 import type { PositionalNeighborTransition } from "@/lib/automaton/transitions/positional-neighbor-transition.ts";
 
 export enum TransitionType {
+  always = "always",
   exactNumberOfNeighbors = "exactNumberOfNeighbors",
   positionalNeighbor = "positionalNeighbor",
 }
 
 export interface TransitionCases<T> {
+  AlwaysTransition: (value: AlwaysTransition) => T;
   ExactNumberOfNeighborsTransition: (
     value: ExactNumberOfNeighborsTransition,
   ) => T;

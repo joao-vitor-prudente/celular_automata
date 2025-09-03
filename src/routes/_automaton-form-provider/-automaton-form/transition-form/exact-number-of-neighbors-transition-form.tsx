@@ -1,7 +1,5 @@
-import { Trash } from "lucide-react";
 import { useId } from "react";
 
-import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import {
   Select,
@@ -13,44 +11,23 @@ import {
 import { ExactNumberOfNeighborsTransition } from "@/lib/automaton/transitions";
 import { stringCapitalize } from "@/lib/utils.ts";
 import { useAutomatonFormContext } from "@/routes/_automaton-form-provider/-automaton-form/automaton-form-context.tsx";
+import {
+  BaseTransitionForm,
+  type TransitionFormProps,
+} from "@/routes/_automaton-form-provider/-automaton-form/transition-form/base-transition-form.tsx";
 
-interface CountSelectProps extends TransitionFormProps {
+interface CountSelectProps
+  extends TransitionFormProps<ExactNumberOfNeighborsTransition> {
   readonly ifState: number;
 }
 
-interface TransitionFormProps {
-  readonly state: number;
-  readonly transition: ExactNumberOfNeighborsTransition;
-  readonly transitionIndex: number;
-}
-
 export function ExactNumberOfNeighborsTransitionForm(
-  props: TransitionFormProps,
+  props: TransitionFormProps<ExactNumberOfNeighborsTransition>,
 ) {
-  const [state, setState] = useAutomatonFormContext();
-  const thenId = useId();
-
-  function setTransitionThen(value: string) {
-    setState((prev) => {
-      const oldState = prev.states[props.state];
-      const newState = oldState.setTransition(
-        props.transitionIndex,
-        props.transition.copyWith({ then: Number.parseInt(value) }),
-      );
-      return prev.setState(props.state, newState);
-    });
-  }
-
-  function removeTransition() {
-    setState((prev) => {
-      const oldState = prev.states[props.state];
-      const newState = oldState.removeTransition(props.transitionIndex);
-      return prev.setState(props.state, newState);
-    });
-  }
+  const [state] = useAutomatonFormContext();
 
   return (
-    <div className="flex items-end gap-2">
+    <BaseTransitionForm {...props}>
       <ul className="flex gap-2">
         {state.states.map((s, index) => (
           <li key={s.name}>
@@ -58,33 +35,7 @@ export function ExactNumberOfNeighborsTransitionForm(
           </li>
         ))}
       </ul>
-      <div className="w-full" />
-      <Label className="flex-col items-start" htmlFor={thenId}>
-        <span>Then</span>
-        <Select
-          onValueChange={setTransitionThen}
-          value={props.transition.then.toString()}
-        >
-          <SelectTrigger id={thenId}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {state.states.map((s, index) => (
-              <SelectItem
-                disabled={index === props.state}
-                key={s.name}
-                value={index.toString()}
-              >
-                {stringCapitalize(s.name)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Label>
-      <Button onClick={removeTransition} variant="destructive">
-        <Trash />
-      </Button>
-    </div>
+    </BaseTransitionForm>
   );
 }
 
